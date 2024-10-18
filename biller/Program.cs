@@ -1,0 +1,1 @@
+﻿// make a program that can divide bills fairly between your friends
