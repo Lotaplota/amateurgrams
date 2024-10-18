@@ -9,4 +9,5 @@ When all preferences are set, you are supposed to feed the program the sequence 
     2. sum the previous values
     3. divide the total amount by marks * questions
     4. round the value by 2 decimal places
-    5. display the calculated value to the user
+    5. display the calculated grade to the user.
+The program will then prompt the user for another set of marks. The previous grade will stay displayed until a new set of grades is fed.
