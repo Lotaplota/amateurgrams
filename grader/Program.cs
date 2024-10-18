@@ -85,7 +85,7 @@ int[] GetArray(int amount, string prompt)
         // Handles specific keys for program control
         if (input.Key == ConsoleKey.Q) // Terminates the program
         {
-            Console.WriteLine("\nGOOBYE");
+            Console.WriteLine("\neaster egg");
             Environment.Exit(0);
         }
         if (input.Key == ConsoleKey.W) // Resets weights
