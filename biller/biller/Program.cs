@@ -2,10 +2,11 @@
 List<Link> links = new List<Link>();
 List<Item> items = new List<Item>();
 
-PopulatePeople(); // DEBUG
-for (int i = 0; i < people.Count; i++)
+PopulatePeople();
+PopulateItems();
+for (int i = 0; i < links.Count; i++)
 {
-    Console.WriteLine(people[i].Name);
+    Console.WriteLine(links[i]);
 }
 
 while (true)
