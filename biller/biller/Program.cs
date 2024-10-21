@@ -68,13 +68,16 @@ void PopulateItems()
         }
 
         input = GetString("enter the item's name, price, and users"); // maybe add a loop that forces the user to input correctly
-        string[] words = input.Split();
-
+        
         // Breaks the loop if the user enters 'done'
         if (input == "done") { break; }
         else
         {
-            Item newItem = new Item(words[0], Convert.ToSingle(words[1]));
+            // Splitting the input into an array of words to adress possible
+            string[] words = input.Split();
+            
+            // Creates a new item with the current information and adds it to the list of items
+            Item newItem = new(words[0], Convert.ToSingle(words[1]));
             items.Add(newItem);
 
             // If no person is specified, links everyone to the current item
@@ -82,7 +85,7 @@ void PopulateItems()
             {
                 for (int i = 0; i < people.Count; i++)
                 {
-                    links.Add(new Link(people[i], newItem));
+                    links.Add(new(people[i], newItem));
                 }
             }
 
@@ -92,10 +95,9 @@ void PopulateItems()
                 // Loops starting from the third command line
                 for (int i = 2; i < words.Length; i++)
                 {
-                    links.Add(new Link(GetPerson(words[i]), newItem));
+                    links.Add(new(GetPerson(words[i]), newItem));
                 }
             }
-            
         }
     }
 }
