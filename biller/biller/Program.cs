@@ -11,11 +11,14 @@ public class Person
     public string Name {get;}
 
     public Person(string name)
+    {
+        Name = name;
+    }
 }
 
 public class Item
 {
-    public string Name {get; private set;}
+    public string? Name {get; private set;}
     public float Value {get; private set;}
 }
 
