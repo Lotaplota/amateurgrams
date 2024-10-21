@@ -1,4 +1,6 @@
-﻿List<Person> people = [];
+﻿using System.Security.Authentication.ExtendedProtection;
+
+List<Person> people = [];
 List<Link> links = [];
 List<Item> items = [];
 
@@ -33,24 +35,22 @@ void GetMainInput()
 
 void PopulatePeople()
 {
-    while (true)
+    while (true) // should this be a loop?
     {
         string input;
 
-        // Console.Clear();
-        Console.WriteLine("enter the names of the people (enter 'done' when done)");
-        
-        for (int i = 0; i < people.Count; i++)
+        // Console.Clear(); DONKEY
+
+        input = GetString("enter each user's name: ");
+        string[] words = input.Split();
+
+        for (int i = 0; i < words.Length; i++)
         {
-            Console.WriteLine($"{i + 1}. {people[i].Name}");
+            Console.WriteLine($"Added {words[i]}");
+            people.Add(new Person(words[i]));
         }
 
-        input = GetString("enter name: ");
-        if (input == "done") { break; }
-        else
-        {
-            people.Add(new Person(input));
-        }
+        break;
     }
 }
 
@@ -105,7 +105,7 @@ void PopulateItems()
     }
 }
 
-string GetString(string prompt)
+string? GetString(string prompt)
 {
     Console.Write(prompt);
     return Console.ReadLine();
@@ -115,6 +115,21 @@ float GetFloat(string prompt)
 {
     Console.Write(prompt);
     return Convert.ToSingle(Console.ReadLine());
+}
+
+float DistributedValue(Item item)
+{
+    int buyers = 0;
+
+    for (int i = 0; i < links.Count; i++)
+    {
+        if (links[i].Item.Name == item.Name)
+        {
+            buyers++;
+        }
+    }
+
+    return (float)Math.Round(item.Value / buyers, 2);
 }
 
 void DisplayPersonInfo(string name)
@@ -160,6 +175,11 @@ public class Person
     public Person(string name)
     {
         Name = name;
+    }
+
+    public override string ToString()
+    {
+        return Name;
     }
 }
 

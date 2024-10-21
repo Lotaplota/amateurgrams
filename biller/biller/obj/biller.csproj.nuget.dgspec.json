@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj": {}
+    "c:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj": {
+    "c:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj",
+        "projectUniqueName": "c:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj",
         "projectName": "biller",
-        "projectPath": "C:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj",
+        "projectPath": "c:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\biller.csproj",
         "packagesPath": "C:\\Users\\Matuê\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\obj\\",
+        "outputPath": "c:\\Users\\Matuê\\Documents\\amateurgrams\\biller\\biller\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
