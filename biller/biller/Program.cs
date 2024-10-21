@@ -1,8 +1,6 @@
-﻿List<Person> people = new List<Person>();
-List<Link> links = new List<Link>();
-List<Item> items = new List<Item>();
-
-// testing .gitignore officially
+﻿List<Person> people = [];
+List<Link> links = [];
+List<Item> items = [];
 
 PopulatePeople();
 PopulateItems();
@@ -39,7 +37,7 @@ void PopulatePeople()
     {
         string input;
 
-        Console.Clear();
+        // Console.Clear();
         Console.WriteLine("enter the names of the people (enter 'done' when done)");
         
         for (int i = 0; i < people.Count; i++)
@@ -62,7 +60,7 @@ void PopulateItems()
     {
         string input;
 
-        Console.Clear();
+        // Console.Clear();
         Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\nif you don't specify anyone, everyone will be involved");
 
         for ( int i = 0; i < items.Count; i++)
@@ -70,13 +68,13 @@ void PopulateItems()
             Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Value}");
         }
 
-        input = GetString("enter the item's name, price, and users"); // maybe add a loop that forces the user to input correctly
+        input = GetString("enter the item's name, price, and users: "); // maybe add a loop that forces the user to input correctly
         
         // Breaks the loop if the user enters 'done'
         if (input == "done") { break; }
         else
         {
-            // Splitting the input into an array of words to adress possible
+            // Splitting the input into an array of words to adress possible interpretations
             string[] words = input.Split();
             
             // Creates a new item with the current information and adds it to the list of items
@@ -88,6 +86,7 @@ void PopulateItems()
             {
                 for (int i = 0; i < people.Count; i++)
                 {
+                    Console.WriteLine($"adding {newItem.Name} to {people[i]}");
                     links.Add(new(people[i], newItem));
                 }
             }
@@ -95,9 +94,10 @@ void PopulateItems()
             // If more than 2 command line arguments are provided, links the item only to the specified people
             else if (words.Length > 2)
             {
-                // Loops starting from the third command line
+                // Loops starting from the third command line argument
                 for (int i = 2; i < words.Length; i++)
                 {
+                    Console.WriteLine($"adding {newItem.Name} to {words[i]}");
                     links.Add(new(GetPerson(words[i]), newItem));
                 }
             }
@@ -144,7 +144,7 @@ Person GetPerson(string name)
         }
         else
         {
-            return null;
+            return null; // FIX THIS
         }
     }
 
@@ -191,6 +191,6 @@ public class Link
 
     public override string ToString()
     {
-        return $"{Target} bought {Item}";
+        return $"{Target.Name} bought {Item.Name} for {Item.Value}";
     }
 }
