@@ -2,6 +2,8 @@
 List<Link> links = new List<Link>();
 List<Item> items = new List<Item>();
 
+// testing .gitignore
+
 PopulatePeople();
 PopulateItems();
 for (int i = 0; i < links.Count; i++)
