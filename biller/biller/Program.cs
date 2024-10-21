@@ -142,13 +142,10 @@ Person GetPerson(string name)
         {
             return people[i];
         }
-        else
-        {
-            return null; // FIX THIS
-        }
+        
     }
 
-    return null;
+    return new("null");
 }
 
 public interface ICommand
