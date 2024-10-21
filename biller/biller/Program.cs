@@ -2,7 +2,7 @@
 List<Link> links = new List<Link>();
 List<Item> items = new List<Item>();
 
-// testing .gitignore
+// testing .gitignore officially
 
 PopulatePeople();
 PopulateItems();
