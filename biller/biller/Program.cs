@@ -93,10 +93,6 @@ Person GetPerson(string name)
     return null;
 }
 
-Person person1 = new Person("one"); people.Add(person1);
-Person person2 = new Person("two"); people.Add(person2);
-Person person3 = new Person("three"); people.Add(person3);
-
 public interface ICommand
 {
     public abstract void Run();
