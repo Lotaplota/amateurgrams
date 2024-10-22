@@ -2,14 +2,12 @@
 {
     private static void Main()
     {
-        List<Person> people = new List<Person>();
-        List<Link> links = new List<Link>();
-        List<Item> items = new List<Item>();
+        List<Person> people = [];
+        List<Link> links = [];
+        List<Item> items = [];
 
         PopulatePeople();
         PopulateItems();
-
-        // CONTINUE test the AddItem() method
 
         for (int i = 0; i < people.Count; i++)
         {
@@ -17,13 +15,11 @@
         }
         DisplayAllInfo();
 
-        AddPerson(new Person("dude"));
-        AddItem(new Item("thing", 12.54f));
-
-        while (true)
+        for (int i = 0; i < people.Count; i++)
         {
-            // GetMainInput();
+            DisplayInfo(people[i]);
         }
+        DisplayAllInfo();
 
         // Shows the user a list of options
         void GetMainInput()
@@ -73,7 +69,7 @@
                     Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
                 }
 
-                input = GetString("enter the item's name, price, and users: "); // maybe add a loop that forces the user to input correctly
+                input = GetString("enter the item's name, price, and users: "); // MAYBE add a loop that forces the user to input correctly
 
                 // Breaks the loop if the user enters 'done'
                 if (input == "done") { break; }
@@ -101,7 +97,6 @@
                         // Loops starting from the third command line argument
                         for (int i = 2; i < words.Length; i++)
                         {
-                            Console.WriteLine($"adding {newItem.Name} to {words[i]}");
                             links.Add(new(GetPerson(words[i]), newItem));
                         }
                     }
@@ -109,11 +104,13 @@
             }
         }
 
-        void AddItem(Item item)
+        // Adds a new item to the list of items
+        // Links that item to everyone on the list if nobody else is specified
+        void AddItem()
         {
             // Prompts for the new item name and price, then separates the input into an array
             string? input = GetString("name the item and its price\n" +
-            "if you don't specify anyone, everyone will contribute");
+            "if you don't specify anyone, everyone will contribute\n");
             string[] words = input.Split();
 
             // Creates a new item using the given information and adds it to the list
@@ -129,6 +126,7 @@
                 }
             }
             // If more than 2 command line arguments are given, links the item to the specified people
+            // starting from the 3rd command line argument
             else
             {
                 for (int i = 2; i < words.Length; i++)
@@ -138,7 +136,7 @@
             }
         }
 
-        void AddPerson(Person person)
+        void AddPerson()
         {
             // IMPLEMENT
         }
@@ -167,10 +165,10 @@
             Console.WriteLine($"{person.Name} bought: ");
             for (int i = 0; i < links.Count; i++)
             {
-                if (links[i].Target.Name == person.Name)
+                if (links[i].Contributor.Name == person.Name)
                 {
                     Console.WriteLine(links[i].Item.Name + " for " + ShareOf(links[i].Item));
-                    debt += links[i].Item.Price;
+                    debt += ShareOf(links[i].Item);
                 }
             }
             Console.WriteLine("owing the total amount of " + debt);
@@ -201,7 +199,7 @@
 
             for (int i = 0; i < links.Count; i++)
             {
-                if (links[i].Target.Name == person.Name)
+                if (links[i].Contributor.Name == person.Name)
                 {
                     theirItems.Add(links[i].Item);
                 }
@@ -210,7 +208,7 @@
             return theirItems;
         }
 
-
+        // Searches a name in the people list and returns the Person
         Person GetPerson(string name)
         {
             for (int i = 0; i < people.Count; i++)
@@ -222,6 +220,7 @@
 
             }
 
+            // If no person is found, returns a dummy person named 'null'
             return new("null");
         }
 
@@ -272,18 +271,18 @@
 
     public class Link
     {
-        public Person Target { get; init;}
+        public Person Contributor { get; init;}
         public Item Item {get; init;}
 
-        public Link(Person target, Item item)
+        public Link(Person contributor, Item item)
         {
-            Target = target;
+            Contributor = contributor;
             Item = item;
         }
 
         public override string ToString()
         {
-            return $"{Target.Name} bought {Item.Name} for {Item.Price}";
+            return $"{Contributor.Name} bought {Item.Name} for {Item.Price}";
         }
     }
 }
