@@ -7,7 +7,7 @@ PopulateItems();
 
 for (int i = 0; i < people.Count; i++)
 {
-    DisplayInfo(people[i].Name);
+    DisplayInfo(people[i]);
 }
 DisplayAllInfo();
 
@@ -133,15 +133,14 @@ float ShareOf(Item item)
     return (float)Math.Round(item.Value / buyers, 2, MidpointRounding.ToPositiveInfinity);
 }
 
-void DisplayInfo(string name) // MAYBE make Person as a parameter instead of string
+void DisplayInfo(Person person)
 {
-    Person person = GetPerson(name);
     float debt = 0;
     
     Console.WriteLine($"{person.Name} bought: ");
     for (int i = 0; i < links.Count; i++)
     {
-        if (links[i].Target.Name == name)
+        if (links[i].Target.Name == person.Name)
         {
             Console.WriteLine(links[i].Item.Name + " for " + ShareOf(links[i].Item));
             debt += links[i].Item.Value;
