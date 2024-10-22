@@ -6,10 +6,10 @@ List<Item> items = [];
 
 PopulatePeople();
 PopulateItems();
-for (int i = 0; i < links.Count; i++)
-{
-    Console.WriteLine(links[i]);
-}
+
+Console.WriteLine(ShareOf(items[0]));
+Console.WriteLine(ShareOf(items[1]));
+Console.WriteLine(ShareOf(items[2]));
 
 while (true)
 {
@@ -117,7 +117,8 @@ float GetFloat(string prompt)
     return Convert.ToSingle(Console.ReadLine());
 }
 
-float DistributedValue(Item item)
+// Calculates the values for a given item taking into account how many candidates are contributing
+float ShareOf(Item item)
 {
     int buyers = 0;
 
@@ -129,7 +130,8 @@ float DistributedValue(Item item)
         }
     }
 
-    return (float)Math.Round(item.Value / buyers, 2);
+    // Returns the calculated value with two decimal places, rounded up
+    return (float)Math.Round(item.Value / buyers, 2, MidpointRounding.ToPositiveInfinity);
 }
 
 void DisplayPersonInfo(string name)
