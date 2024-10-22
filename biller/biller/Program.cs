@@ -1,15 +1,11 @@
-﻿using System.Security.Authentication.ExtendedProtection;
-
-List<Person> people = [];
+﻿List<Person> people = [];
 List<Link> links = [];
 List<Item> items = [];
 
 PopulatePeople();
 PopulateItems();
 
-Console.WriteLine(ShareOf(items[0]));
-Console.WriteLine(ShareOf(items[1]));
-Console.WriteLine(ShareOf(items[2]));
+DisplayAllInfo();
 
 while (true)
 {
@@ -60,8 +56,8 @@ void PopulateItems()
     {
         string input;
 
-        // Console.Clear();
-        Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\nif you don't specify anyone, everyone will be involved");
+        // Console.Clear(); DONKEY
+        Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\nif you don't specify anyone, everyone will contribute");
 
         for ( int i = 0; i < items.Count; i++)
         {
@@ -86,7 +82,6 @@ void PopulateItems()
             {
                 for (int i = 0; i < people.Count; i++)
                 {
-                    Console.WriteLine($"adding {newItem.Name} to {people[i]}");
                     links.Add(new(people[i], newItem));
                 }
             }
@@ -134,7 +129,7 @@ float ShareOf(Item item)
     return (float)Math.Round(item.Value / buyers, 2, MidpointRounding.ToPositiveInfinity);
 }
 
-void DisplayPersonInfo(string name)
+void DisplayInfo(string name)
 {
     Person person = GetPerson(name);
     float debt = 0;
@@ -144,12 +139,47 @@ void DisplayPersonInfo(string name)
     {
         if (links[i].Target.Name == name)
         {
-            Console.WriteLine(links[i].Item.Name + " for " + links[i].Item.Value);
+            Console.WriteLine(links[i].Item.Name + " for " + ShareOf(links[i].Item));
             debt += links[i].Item.Value;
         }
     }
     Console.WriteLine("owing the total amount of " + debt);
 }
+
+void DisplayAllInfo()
+{
+    for (int i = 0; i < people.Count; i++)
+    {
+        Person currentPerson = people[i];
+        List<Item> theirItems = GetItemsFrom(people[i]);
+
+        float owedValue = 0;
+
+        // Sums the value of all items the current person contributes
+        for (int j = 0; j < theirItems.Count; j++)
+        {
+            owedValue += ShareOf(theirItems[j]);
+        }
+
+        Console.WriteLine($"{currentPerson.Name} owes {owedValue}");
+    }
+}
+
+List<Item> GetItemsFrom(Person person)
+{
+    List<Item> theirItems = [];
+
+    for (int i = 0; i < links.Count; i++)
+    {
+        if (links[i].Target.Name == person.Name)
+        {
+            theirItems.Add(links[i].Item);
+        }
+    }
+
+    return theirItems;
+}
+
 
 Person GetPerson(string name)
 {
