@@ -5,6 +5,10 @@ List<Item> items = [];
 PopulatePeople();
 PopulateItems();
 
+for (int i = 0; i < people.Count; i++)
+{
+    DisplayInfo(people[i].Name);
+}
 DisplayAllInfo();
 
 while (true)
@@ -129,7 +133,7 @@ float ShareOf(Item item)
     return (float)Math.Round(item.Value / buyers, 2, MidpointRounding.ToPositiveInfinity);
 }
 
-void DisplayInfo(string name)
+void DisplayInfo(string name) // MAYBE make Person as a parameter instead of string
 {
     Person person = GetPerson(name);
     float debt = 0;
