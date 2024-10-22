@@ -2,18 +2,23 @@
 {
     private static void Main()
     {
-        List<Person> people = [];
-        List<Link> links = [];
-        List<Item> items = [];
+        List<Person> people = new List<Person>();
+        List<Link> links = new List<Link>();
+        List<Item> items = new List<Item>();
 
         PopulatePeople();
         PopulateItems();
+
+        // CONTINUE test the AddItem() method
 
         for (int i = 0; i < people.Count; i++)
         {
             DisplayInfo(people[i]);
         }
         DisplayAllInfo();
+
+        AddPerson(new Person("dude"));
+        AddItem(new Item("thing", 12.54f));
 
         while (true)
         {
@@ -60,7 +65,8 @@
                 string input;
 
                 // Console.Clear(); DONKEY
-                Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\nif you don't specify anyone, everyone will contribute");
+                Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\n" +
+                "if you don't specify anyone, everyone will contribute");
 
                 for (int i = 0; i < items.Count; i++)
                 {
@@ -103,7 +109,39 @@
             }
         }
 
+        void AddItem(Item item)
+        {
+            // Prompts for the new item name and price, then separates the input into an array
+            string? input = GetString("name the item and its price\n" +
+            "if you don't specify anyone, everyone will contribute");
+            string[] words = input.Split();
 
+            // Creates a new item using the given information and adds it to the list
+            Item newItem = new(words[0], Convert.ToSingle(words[1]));
+            items.Add(newItem);
+
+            // If 2 arguments are given, links the item to everyone
+            if (words.Length == 2)
+            {
+                for (int i = 0; i < people.Count; i++)
+                {
+                    links.Add(new(people[i], newItem));
+                }
+            }
+            // If more than 2 command line arguments are given, links the item to the specified people
+            else
+            {
+                for (int i = 2; i < words.Length; i++)
+                {
+                    links.Add(new(GetPerson(words[i]), newItem));
+                }
+            }
+        }
+
+        void AddPerson(Person person)
+        {
+            // IMPLEMENT
+        }
 
         // Calculates the values for a given item taking into account how many candidates are contributing
         float ShareOf(Item item)
