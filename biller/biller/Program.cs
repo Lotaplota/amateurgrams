@@ -4,7 +4,7 @@
     static List<Link> links = [];
     static List<Item> items = [];
 
-    void Main()
+    static void Main()
     {
         PopulatePeople();
         PopulateItems();
@@ -12,21 +12,17 @@
     }
 
     // Shows the user a list of available options, then prompts them for an input
-    void GetMainInput()
+    static void GetMainInput()
     {
         Console.WriteLine("What would you like to do? (enter a number)\n" +
-        "1. list people, items, or links" +
-        "2. describe person or items" +
-        "5. update person or item" +
-        "6. describe item" +
-        "7. update person" +
-        "8. update item" +
-        "3. add person" +
-        "4. add item");
+        "1. list people, items, or links\n" +
+        "2. describe person or item\n" +
+        "3. update person or item\n" +
+        "4. add person or item\n");
 
         while (true)
         {
-            string input = GetString("Choose an option (number or text)"); // CONTINUE implement these branches
+            string? input = GetString("Choose an option"); // CONTINUE implement these branches and test the second list option
 
             IBranch command = input switch
             {
@@ -36,10 +32,20 @@
                 "4" => new AddBranch(),
                 _ => new VoidBranch()
             };
+
+            if (command.GetType() == typeof(VoidBranch))
+            {
+                Console.WriteLine("Invalid input");
+            }
+            else
+            {
+                command.Run();
+                break;
+            }
         }
     }
 
-    void PopulatePeople()
+    static void PopulatePeople()
     {
         string input;
 
@@ -55,7 +61,7 @@
         }
     }
 
-    void PopulateItems()
+    static void PopulateItems()
     {
         while (true)
         {
@@ -225,7 +231,7 @@
     }
 
     // Searches a name in the people list and returns the Person
-    Person GetPerson(string name)
+    static Person GetPerson(string name)
     {
         for (int i = 0; i < people.Count; i++)
         {
@@ -254,7 +260,7 @@
         return false;
     }
 
-    string? GetString(string prompt)
+    static string? GetString(string prompt)
     {
         Console.Write(prompt);
         return Console.ReadLine();
@@ -308,6 +314,25 @@
                 {
                     Console.WriteLine("Invalid input");
                 }
+            }
+        }
+
+        private void ListItems()
+        {
+            // Initializing variable to store the amount of letters in the biggest item name
+            int maxLength = 0; 
+
+            foreach (var item in items)
+            {
+                if (item.Name.Length > maxLength)
+                {
+                    maxLength = item.Name.Length;
+                }
+            }
+
+            foreach (var item in items)
+            {
+                Console.WriteLine($"{item.Name.PadRight(maxLength + 4)}{item.Price}");
             }
         }
     }
