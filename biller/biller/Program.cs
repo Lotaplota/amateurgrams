@@ -1,4 +1,7 @@
-﻿internal class Program
+﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+
+internal class Program
 {
     private static void Main()
     {
@@ -9,33 +12,31 @@
         PopulatePeople();
         PopulateItems();
 
-        for (int i = 0; i < people.Count; i++)
-        {
-            DisplayInfo(people[i]);
-        }
-        DisplayAllInfo();
-
-        for (int i = 0; i < people.Count; i++)
-        {
-            DisplayInfo(people[i]);
-        }
-        DisplayAllInfo();
-
-        // Shows the user a list of options
+        // Shows the user a list of available options, then prompts them for an input
         void GetMainInput()
         {
+            Console.WriteLine("What would you like to do? (enter a number)\n" +
+            "1. list people, items, or links" +
+            "2. describe person or items" +
+            "5. update person or item" +
+            "6. describe item" +
+            "7. update person" +
+            "8. update item" +
+            "3. add person" +
+            "4. add item");
             while (true)
             {
-                Console.WriteLine("What would you like to do? (enter a number)\n" +
-                "1. list people" +
-                "2. list items" +
-                "5. describe person" +
-                "6. describe item" +
-                "7. update person" +
-                "8. update item" +
-                "3. add person" +
-                "4. add item");
-            }
+                string input = GetString("Choose an option (number or text)"); // CONTINUE implement these branches
+
+                IBranch command = input switch
+                {
+                    "1" => new ListBranch(),
+                    "2" => new DescribeBranch(),
+                    "3" => new UpdateBranch(),
+                    "4" => new UpdateBranch(),
+                    "5" => new AddBranch(),
+                    _ => new VoidBranch()
+                }; 
         }
 
         void PopulatePeople()
@@ -138,7 +139,22 @@
 
         void AddPerson()
         {
-            // IMPLEMENT
+            // Loops until the user has entered a valid input
+            while (true)
+            {
+                string? input = GetString("enter the name of the person: ");
+
+                // Checks if the name is already in the list, if not, creates a person with that name and adds it to the list
+                if (IsPersonDuplicate(input))
+                {
+                    Console.WriteLine("This name is already on the list!");
+                }
+                else
+                {
+                    people.Add(new(input));
+                    break;
+                }
+            } 
         }
 
         // Calculates the values for a given item taking into account how many candidates are contributing
@@ -224,6 +240,20 @@
             return new("null");
         }
 
+        bool IsPersonDuplicate(string? name)
+        {
+            // Loops through the list of people and returns true if the name matches
+            for (int i= 0; i < people.Count; i++)
+            {
+                if (people[i].Name == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         string? GetString(string prompt)
         {
             Console.Write(prompt);
@@ -237,7 +267,7 @@
         }
     }
 
-    public interface ICommand
+    public interface IBranch
     {
         public abstract void Run();
     }
