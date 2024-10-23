@@ -1,14 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-
-internal class Program
+﻿internal class Program
 {
-    private static void Main()
-    {
-        List<Person> people = [];
-        List<Link> links = [];
-        List<Item> items = [];
+    static List<Person> people = [];
+    static List<Link> links = [];
+    static List<Item> items = [];
 
+    void Main()
+    {
         PopulatePeople();
         PopulateItems();
 
@@ -33,10 +30,10 @@ internal class Program
                     "1" => new ListBranch(),
                     "2" => new DescribeBranch(),
                     "3" => new UpdateBranch(),
-                    "4" => new UpdateBranch(),
-                    "5" => new AddBranch(),
+                    "4" => new AddBranch(),
                     _ => new VoidBranch()
-                }; 
+                };
+            }
         }
 
         void PopulatePeople()
@@ -270,6 +267,74 @@ internal class Program
     public interface IBranch
     {
         public abstract void Run();
+    }
+
+    public class ListBranch : IBranch
+    {
+        public void Run()
+        {
+            // Console.Clear();
+
+            Console.Write("List of\n" +
+            "1. People\n" +
+            "2. Items\n" +
+            "Choose one of the options: ");
+
+            while (true)
+            {
+                string input = Console.ReadLine();
+
+                if (input == "1" || input.ToLower() == "people")
+                {
+                    Program.ListPeople();
+                }
+                else if (input == "2" || string.Equals(input, "items"))
+                {
+                    //
+                }
+                else
+                {
+                    //
+                }
+            }
+        }
+    }
+
+    private static void ListPeople()
+    {
+        // i need access to the list of people contained in the Main() method!!
+    }
+
+    public class DescribeBranch : IBranch
+    {
+        public void Run()
+        {
+
+        }
+    }
+
+    public class UpdateBranch : IBranch
+    {
+        public void Run()
+        {
+
+        }
+    }
+
+    public class AddBranch : IBranch
+    {
+        public void Run()
+        {
+
+        }
+    }
+
+    public class VoidBranch : IBranch
+    {
+        public void Run()
+        {
+
+        }
     }
 
     public class Person
