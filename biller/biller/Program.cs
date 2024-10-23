@@ -1,4 +1,6 @@
-﻿internal class Program
+﻿using System.ComponentModel.DataAnnotations;
+
+internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -143,7 +145,7 @@
         }
     }
 
-    void AddPerson()
+    static void AddPerson()
     {
         // Loops until the user has entered a valid input
         while (true)
@@ -157,10 +159,54 @@
             }
             else
             {
-                people.Add(new(input));
+                // Creates a new Person and adds them to the list
+                Person newPerson = new(input);
+                people.Add(newPerson);
+                
+                // Links the person to all of the items in the list
+                foreach (Item item in items)
+                {
+                    Console.WriteLine($"{newPerson.Name} contributes to {item.Name}");
+                    links.Add(new(newPerson, item)); // CONTINUE
+                }
+
                 break;
             }
         } 
+    }
+
+    static void RemovePerson()
+    {
+        // TODO
+    }
+
+    // Edits the list of people by comparing the names to user input
+    // If the entered person is already on the list, removes the person
+    // If the entered person is not on the list, adds the person
+    static void EditPersonList()
+    {
+        // Prints, in one line, the name of each person on the list
+        Console.WriteLine("People on the list: ");
+        foreach (var person in people)
+        {
+            Console.Write(person.Name + " ");
+        }
+        Console.WriteLine("Now enter a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
+
+        string input = Console.ReadLine();
+        string[] names = input.Split();
+
+        foreach (string name in names)
+        {
+            if (GetPerson(name).Name == name)
+            {
+                RemovePerson(name);
+            }
+            else
+            {
+                AddPerson();
+            }
+        }
     }
 
         // Calculates the values for a given item taking into account how many candidates are contributing
