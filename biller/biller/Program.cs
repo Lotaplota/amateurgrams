@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-internal class Program
+﻿internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -18,25 +16,23 @@ internal class Program
     {
         // Console.Clear();
 
-        Console.WriteLine("What would you like to do? (enter a number)\n" +
+        Console.WriteLine("MAIN MENU\n" +
         "1. list people, items, or links\n" +
-        "2. describe person or item\n" +
-        "3. update person or item\n" +
-        "4. edit people or item list (testing)\n" +
+        "(TEST) 2. describe and update person or item\n" +
+        "3. edit people or item list\n" +
         "exit. quits the application\n");
 
         string? input = "start";
         
         while (input != "exit")
         {
-            input = GetString("Choose an option: "); // CONTINUE implement these branches and test the second list option
+            input = GetString("Enter a number: ");
 
             IBranch command = input switch
             {
                 "1" => new ListBranch(),
-                "2" => new DescribeBranch(),
-                "3" => new UpdateBranch(),
-                "4" => new EditListBranch(), // WORKS
+                "2" => new AccessBranch(),
+                "3" => new EditListBranch(),
                 _ => new VoidBranch()
                 // New commands go here
             };
@@ -52,7 +48,7 @@ internal class Program
             }
             else
             {
-                command.Run();
+                command.Go();
                 break;
             }
         }
@@ -208,6 +204,33 @@ internal class Program
         }
     }
 
+    static void RemoveItem(string name)
+    {
+        // Retrieves the person to be removed if name matches
+        Item removee = GetItem(name);
+
+        // If the person returned was null, warns the user that the person's name is not in the list and returns from the method
+        if (removee == null)
+        {
+            Console.WriteLine($"can't remove {name} because it's not on the list!"); // DEBUG PRINT
+            return;
+        }
+        else
+        {
+            items.Remove(removee);
+        }
+
+        // Loops through the list of links in reverse order, removing the link if the item name matches
+        for (int i = links.Count - 1; i >= 0; i--)
+        {
+            if (links[i].Item.Name == name)
+            {
+                Console.WriteLine($"{links[i]} removed");
+                links.Remove(links[i]);
+            }
+        }
+    }
+
     // Edits the list of people by comparing the names to user input
     // If the entered person is already on the list, removes the person
     // If the entered person is not on the list, adds the person
@@ -295,7 +318,7 @@ internal class Program
         }
     }
 
-    List<Item> GetItemsFrom(Person person)
+    static List<Item> GetItemsFrom(Person person)
     {
         List<Item> theirItems = [];
 
@@ -313,31 +336,30 @@ internal class Program
     // Searches a name in the people list and returns the Person
     static Person GetPerson(string name)
     {
-        for (int i = 0; i < people.Count; i++)
+        foreach (Person person in people)
         {
-            if (people[i].Name == name)
+            if (person.Name == name)
             {
-                return people[i];
+                return person;
             }
-
         }
 
-        // If no person is found, returns a dummy person named 'null'
+        // Returns null if no person is found
         return null;
     }
 
-    static bool IsPersonDuplicate(string? name)
+    static Item GetItem(string name)
     {
-        // Loops through the list of people and returns true if the name matches
-        for (int i= 0; i < people.Count; i++)
+        foreach (Item item in items)
         {
-            if (people[i].Name == name)
+            if (item.Name == name)
             {
-                return true;
+                return item;
             }
         }
 
-        return false;
+        // Returns null if no item is found
+        return null;
     }
 
     static string? GetString(string prompt)
@@ -358,6 +380,51 @@ internal class Program
         {
             Console.WriteLine($"{i + 1}. {people[i].Name}");
         }
+    }
+
+    static void UpdatePerson(string name)
+    {
+        // Gets the person with that name and their items
+        Person person = GetPerson(name);
+        List<Item> theirItems = GetItemsFrom(person);
+
+        // Prints the items the person currently contributes to <-- WHOA LOOK AT THIS
+        Console.WriteLine("This person currently contributes to: "); // °o°
+        foreach (Item item in theirItems)
+        {
+            Console.WriteLine($"{item}");
+        }
+
+        string input = GetString("Type in the items you want to add/remove, or [cancel]: ");
+        string[] words = input.Split();
+
+        if (input == "cancel")
+        {
+            return;
+        }
+
+        foreach (string word in words)
+        {
+            if (GetItem(word) == null)
+            {
+                Console.WriteLine($"{word} is not a valid item");
+            }
+            else
+            {
+                for (int i = links.Count - 1; i >= 0; i--)
+                {
+                    if (links[i].Contributor.Name == person.Name)
+                    {
+                        links.Remove(links[i]);
+                    }
+                }
+            }
+        }
+    }
+
+    static void UpdateItem()
+    {
+        // TODO
     }
 
     static void ListItems()
@@ -381,12 +448,12 @@ internal class Program
 
     public interface IBranch
     {
-        public abstract void Run();
+        public abstract void Go();
     }
 
     public class ListBranch : IBranch
     {
-        public void Run()
+        public void Go()
         {
             // Console.Clear();
 
@@ -418,25 +485,87 @@ internal class Program
     }
 
 
-    public class DescribeBranch : IBranch
+    public class AccessBranch : IBranch
     {
-        public void Run()
+        public void Go()
         {
+            Console.WriteLine("What would you like to access?\n" +
+            "1. (TEST) Person\n" +
+            "2. (NOT WORKING) Item");
 
+            while (true)
+            {
+                string input = GetString("Choose an option (name or number): ");
+
+                IBranch branch = input switch
+                {
+                    "1" => new AccessPersonBranch(),
+                    "2" => new AccessItemBranch(),
+                    _ => new VoidBranch()
+                };
+
+                if (branch.GetType() == typeof(VoidBranch))
+                {
+                    Console.WriteLine("Invalid input");
+                }
+                else
+                {
+                    branch.Go();
+                    break;
+                }
+            }
+        }
+    }
+
+    public class AccessPersonBranch : IBranch
+    {
+        public void Go()
+        {
+            // Prints the list of people
+            Console.WriteLine("List of people:");
+            ListPeople();
+
+            // Prompts the user to input a person's name to access
+            while (true)
+            {
+                string input = GetString("Type a name to access, [done] to go back: ");
+
+                if (input == "done")
+                {
+                    break;
+                }
+
+                if (GetPerson(input) == null)
+                {
+                    Console.WriteLine("Invalid input");
+                }
+                else
+                {
+                    UpdatePerson(input);
+                }
+            }
+        }
+    }
+
+    public class AccessItemBranch : IBranch
+    {
+        public void Go()
+        {
+            // TODO
         }
     }
 
     public class UpdateBranch : IBranch
     {
-        public void Run()
+        public void Go()
         {
-
+            // MAYBE this is useless
         }
     }
 
     public class EditListBranch : IBranch
     {
-        public void Run()
+        public void Go()
         {
             // Console.Clear();
 
@@ -469,7 +598,7 @@ internal class Program
 
     public class VoidBranch : IBranch
     {
-        public void Run()
+        public void Go()
         {
             Console.WriteLine("e a s t e r   e g g");
         }
