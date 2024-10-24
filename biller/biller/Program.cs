@@ -390,6 +390,11 @@
 
         // Prints the items the person currently contributes to <-- WHOA LOOK AT THIS
         Console.WriteLine("This person currently contributes to: "); // °o°
+        
+        if (theirItems.Count == 0)
+        {
+            Console.WriteLine("Nothing! Such a loser...");
+        }
         foreach (Item item in theirItems)
         {
             Console.WriteLine($"{item.Name}");
@@ -415,6 +420,7 @@
                 {
                     if (links[i].Contributor.Name == person.Name)
                     {
+                        Console.WriteLine($"removing {links[i]}");
                         links.Remove(links[i]);
                     }
                 }
@@ -521,13 +527,16 @@
     {
         public void Go()
         {
-            // Prints the list of people
-            Console.WriteLine("List of people:");
-            ListPeople();
-
-            // Prompts the user to input a person's name to access
             while (true)
             {
+                // Prints the list of people
+                Console.WriteLine("List of people:");
+                foreach (Person person in people)
+                {
+                    Console.WriteLine(person.Name);
+                }
+
+                // Prompts the user to input a person's name to access
                 string input = GetString("Type a name to access, [done] to go back: ");
 
                 if (input == "done")
