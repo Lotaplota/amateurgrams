@@ -14,42 +14,47 @@
     // Shows the user a list of available options, then prompts them for an input
     static void GetMainInput()
     {
-        // Console.Clear();
-
-        Console.WriteLine("MAIN MENU\n" +
-        "1. list people, items, or links\n" +
-        "(TEST) 2. describe and update person or item\n" +
-        "3. edit people or item list\n" +
-        "exit. quits the application\n");
 
         string? input = "start";
         
         while (input != "exit")
         {
-            input = GetString("Enter a number: ");
+            // Console.Clear();
+
+            // Prints the main menu, showing the user all of his options
+            Console.WriteLine("MAIN MENU\n" +
+            "1. list people, items, or links\n" +
+            "(TEST) 2. describe and update person or item\n" +
+            "3. edit people or item list\n" +
+            "exit. quits the application\n");
+
+            input = GetString("Enter a [number]: ");
 
             IBranch command = input switch
             {
                 "1" => new ListBranch(),
                 "2" => new AccessBranch(),
                 "3" => new EditListBranch(),
-                _ => new VoidBranch()
                 // New commands go here
+                _ => new VoidBranch()
             };
 
-            // if the input is not valid, creates a valid branch to repeat the loop    
+            // if the input is not valid, creates a void branch to repeat the loop    
             if (command.GetType() == typeof(VoidBranch))
             {
-                if (input == "exit") { } // this looks ugly
+                if (input == "exit")
+                {
+                    Console.WriteLine("Goodbye!");
+                }
                 else
                 {
-                Console.WriteLine("Invalid input");
+                    Console.WriteLine("Invalid input");
                 }
             }
+            // Enters the chosen branch
             else
             {
                 command.Go();
-                break;
             }
         }
     }
@@ -85,7 +90,7 @@
                 Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
             }
 
-            input = GetString("enter the item's name, price, and users: "); // MAYBE add a loop that forces the user to input correctly
+            input = GetString("enter the item's information '[name price [person...]' or 'done' to continue"); // MAYBE add a loop that forces the user to input correctly
 
             // Breaks the loop if the user enters 'done'
             if (input == "done") { break; }
@@ -400,10 +405,10 @@
             Console.WriteLine($"{item.Name}");
         }
 
-        string input = GetString("Type in the items you want to add/remove, or [cancel]: ");
+        string input = GetString("Type in the [item...] you want to add/remove, or 'cancel' to go back: ");
         string[] words = input.Split();
 
-        if (input == "cancel")
+        if (input == "cancel" || input == "")
         {
             return;
         }
@@ -463,16 +468,20 @@
         {
             // Console.Clear();
 
-            Console.Write("Display the list of\n" +
-            "1. People\n" +
-            "2. Items\n" +
-            "Choose one of the options: ");
-
             while (true)
             {
+                Console.Write("Display the list of\n" +
+                "1. People\n" +
+                "2. Items\n" +
+                "Type in one of the options or 'cancel' to go back: ");
+
                 string? input = Console.ReadLine();
 
-                if (input == "1" || input.ToLower() == "people")
+                if (input == "cancel" || input == "")
+                {
+                    return;
+                }
+                else if (input == "1" || input.ToLower() == "people")
                 {
                     ListPeople();
                     break;
@@ -537,11 +546,11 @@
                 }
 
                 // Prompts the user to input a person's name to access
-                string input = GetString("Type a name to access, [done] to go back: ");
+                string input = GetString("Type in a [name] to access, 'done' to go back: ");
 
-                if (input == "done")
+                if (input == "cancel" || input == "")
                 {
-                    break;
+                    return;
                 }
 
                 if (GetPerson(input) == null)
@@ -581,12 +590,15 @@
             Console.Write("Edit the list of\n" +
             "1. People\n" +
             "2. Items\n" +
-            "Choose one of the options: ");
+            "Type in of the options (name or number) or 'cancel' to go back: ");
 
             while (true)
             {
                 string? input = Console.ReadLine();
-
+                if (input == "cancel" || input == "")
+                {
+                    return;
+                }
                 if (input == "1" || input.ToLower() == "people")
                 {
                     EditPersonList();
