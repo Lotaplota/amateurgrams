@@ -16,28 +16,39 @@ internal class Program
     // Shows the user a list of available options, then prompts them for an input
     static void GetMainInput()
     {
+        // Console.Clear();
+
         Console.WriteLine("What would you like to do? (enter a number)\n" +
         "1. list people, items, or links\n" +
         "2. describe person or item\n" +
         "3. update person or item\n" +
-        "4. add person or item\n");
+        "4. edit people or item list (testing)\n" +
+        "exit. quits the application\n");
 
-        while (true)
+        string? input = "start";
+        
+        while (input != "exit")
         {
-            string? input = GetString("Choose an option"); // CONTINUE implement these branches and test the second list option
+            input = GetString("Choose an option: "); // CONTINUE implement these branches and test the second list option
 
             IBranch command = input switch
             {
                 "1" => new ListBranch(),
                 "2" => new DescribeBranch(),
                 "3" => new UpdateBranch(),
-                "4" => new AddBranch(),
+                "4" => new EditListBranch(), // WORKS
                 _ => new VoidBranch()
+                // New commands go here
             };
 
+            // if the input is not valid, creates a valid branch to repeat the loop    
             if (command.GetType() == typeof(VoidBranch))
             {
+                if (input == "exit") { } // this looks ugly
+                else
+                {
                 Console.WriteLine("Invalid input");
+                }
             }
             else
             {
@@ -145,39 +156,56 @@ internal class Program
         }
     }
 
-    static void AddPerson()
+    static void AddPerson(string name)
     {
-        // Loops until the user has entered a valid input
-        while (true)
+        Person newPerson = new(name);
+
+        // Adds the person if not already on the list
+        if (GetPerson(name) == null)
         {
-            string? input = GetString("enter the name of the person: ");
-
-            // Checks if the name is already in the list, if not, creates a person with that name and adds it to the list
-            if (IsPersonDuplicate(input))
-            {
-                Console.WriteLine("This name is already on the list!");
-            }
-            else
-            {
-                // Creates a new Person and adds them to the list
-                Person newPerson = new(input);
-                people.Add(newPerson);
-                
-                // Links the person to all of the items in the list
-                foreach (Item item in items)
-                {
-                    Console.WriteLine($"{newPerson.Name} contributes to {item.Name}");
-                    links.Add(new(newPerson, item)); // CONTINUE
-                }
-
-                break;
-            }
-        } 
+            Console.WriteLine($"{name} was added to the list"); // DEBUG PRINT
+            people.Add(newPerson);
+        }
+        // Warns the user if the person is already in the list and returns from the method
+        else
+        {
+            Console.WriteLine($"{name} is already on the list!");
+            return;
+        }
+        
+        // Links the person to all of the items in the list
+        foreach (Item item in items)
+        {
+            Console.WriteLine($"{newPerson.Name} contributes to {item.Name}");
+            links.Add(new(newPerson, item));
+        }
     }
 
-    static void RemovePerson()
+    static void RemovePerson(string name)
     {
-        // TODO
+        // Retrieves the person to be removed if name matches
+        Person removee = GetPerson(name);
+
+        // If the person returned was null, warns the user that the person's name is not in the list and returns from the method
+        if (removee == null)
+        {
+            Console.WriteLine($"can't remove {name} because they're not on the list!"); // DEBUG PRINT
+            return;
+        }
+        else
+        {
+            people.Remove(removee);
+        }
+
+        // Loops through the list of links in reverse order, removing the link if the name matches
+        for (int i = links.Count - 1; i >= 0; i--)
+        {
+            if (links[i].Contributor.Name == name)
+            {
+                Console.WriteLine($"{links[i]} removed");
+                links.Remove(links[i]);
+            }
+        }
     }
 
     // Edits the list of people by comparing the names to user input
@@ -191,22 +219,28 @@ internal class Program
         {
             Console.Write(person.Name + " ");
         }
-        Console.WriteLine("Now enter a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
+        Console.WriteLine("\nNow enter a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
 
         string input = Console.ReadLine();
         string[] names = input.Split();
 
         foreach (string name in names)
         {
-            if (GetPerson(name).Name == name)
+            // Removes person if name is already on the list, adds if not on the list
+            if (GetPerson(name) == null)
             {
-                RemovePerson(name);
+                AddPerson(name);
             }
             else
             {
-                AddPerson();
+                RemovePerson(name);
             }
         }
+    }
+
+    static void EditItemList()
+    {
+        // TODO
     }
 
         // Calculates the values for a given item taking into account how many candidates are contributing
@@ -289,10 +323,10 @@ internal class Program
         }
 
         // If no person is found, returns a dummy person named 'null'
-        return new("null");
+        return null;
     }
 
-    bool IsPersonDuplicate(string? name)
+    static bool IsPersonDuplicate(string? name)
     {
         // Loops through the list of people and returns true if the name matches
         for (int i= 0; i < people.Count; i++)
@@ -326,6 +360,25 @@ internal class Program
         }
     }
 
+    static void ListItems()
+    {
+        // Initializing variable to store the amount of letters in the biggest item name
+        int maxLength = 0; 
+
+        foreach (var item in items)
+        {
+            if (item.Name.Length > maxLength)
+            {
+                maxLength = item.Name.Length;
+            }
+        }
+
+        foreach (var item in items)
+        {
+            Console.WriteLine($"{item.Name.PadRight(maxLength + 4)}{item.Price}");
+        }
+    }
+
     public interface IBranch
     {
         public abstract void Run();
@@ -337,7 +390,7 @@ internal class Program
         {
             // Console.Clear();
 
-            Console.Write("List of\n" +
+            Console.Write("Display the list of\n" +
             "1. People\n" +
             "2. Items\n" +
             "Choose one of the options: ");
@@ -362,25 +415,6 @@ internal class Program
                 }
             }
         }
-
-        private void ListItems()
-        {
-            // Initializing variable to store the amount of letters in the biggest item name
-            int maxLength = 0; 
-
-            foreach (var item in items)
-            {
-                if (item.Name.Length > maxLength)
-                {
-                    maxLength = item.Name.Length;
-                }
-            }
-
-            foreach (var item in items)
-            {
-                Console.WriteLine($"{item.Name.PadRight(maxLength + 4)}{item.Price}");
-            }
-        }
     }
 
 
@@ -400,11 +434,36 @@ internal class Program
         }
     }
 
-    public class AddBranch : IBranch
+    public class EditListBranch : IBranch
     {
         public void Run()
         {
+            // Console.Clear();
 
+            Console.Write("Edit the list of\n" +
+            "1. People\n" +
+            "2. Items\n" +
+            "Choose one of the options: ");
+
+            while (true)
+            {
+                string? input = Console.ReadLine();
+
+                if (input == "1" || input.ToLower() == "people")
+                {
+                    EditPersonList();
+                    break;
+                }
+                else if (input == "2" || input.ToLower() == "items")
+                {
+                    EditItemList();
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input");
+                }
+            }
         }
     }
 
@@ -412,7 +471,7 @@ internal class Program
     {
         public void Run()
         {
-
+            Console.WriteLine("e a s t e r   e g g");
         }
     }
 
