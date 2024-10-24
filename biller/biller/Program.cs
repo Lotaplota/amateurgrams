@@ -1,4 +1,6 @@
-﻿internal class Program
+﻿using System.Runtime.InteropServices;
+
+internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -24,11 +26,11 @@
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
             "1. list people, items, or links\n" +
-            "(TEST) 2. describe and update person or item\n" +
+            "2. describe and update person or item\n" +
             "3. edit people or item list\n" +
             "exit. quits the application\n");
 
-            input = GetString("Enter a [number]: ");
+            input = GetString("Enter an option: ");
 
             IBranch command = input switch
             {
@@ -90,7 +92,7 @@
                 Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
             }
 
-            input = GetString("enter the item's information '[name price [person...]' or 'done' to continue"); // MAYBE add a loop that forces the user to input correctly
+            input = GetString("enter the item's information 'name price [person...]' or 'done' to continue\n"); // MAYBE add a loop that forces the user to input correctly
 
             // Breaks the loop if the user enters 'done'
             if (input == "done") { break; }
@@ -495,6 +497,8 @@
                 {
                     Console.WriteLine("Invalid input");
                 }
+
+                Console.ReadLine();
             }
         }
     }
