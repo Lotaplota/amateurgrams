@@ -392,7 +392,7 @@
         Console.WriteLine("This person currently contributes to: "); // °o°
         foreach (Item item in theirItems)
         {
-            Console.WriteLine($"{item}");
+            Console.WriteLine($"{item.Name}");
         }
 
         string input = GetString("Type in the items you want to add/remove, or [cancel]: ");
