@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-internal class Program
+﻿internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -10,6 +8,7 @@ internal class Program
     {
         PopulatePeople();
         PopulateItems();
+        DisplayAllInfo();
         GetMainInput();
     }
 
@@ -21,8 +20,6 @@ internal class Program
         
         while (input != "exit")
         {
-            // Console.Clear();
-
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
             "1. list people, items, or links\n" +
@@ -56,6 +53,8 @@ internal class Program
             // Enters the chosen branch
             else
             {
+                // Console.Clear(); DONKEY
+                Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
                 command.Go();
             }
         }
@@ -65,7 +64,7 @@ internal class Program
     {
         string input;
 
-        // Console.Clear(); DONKEY
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
         input = GetString("enter each user's name: ");
         string[] words = input.Split();
@@ -75,6 +74,8 @@ internal class Program
             Console.WriteLine($"Added {words[i]}");
             people.Add(new Person(words[i]));
         }
+
+        HoldForKey();
     }
 
     static void PopulateItems()
@@ -83,16 +84,13 @@ internal class Program
         {
             string input;
 
-            // Console.Clear(); DONKEY
-            Console.WriteLine("enter the starting items and their prices (enter 'done' when done)\n" +
-            "if you don't specify anyone, everyone will contribute");
-
             for (int i = 0; i < items.Count; i++)
             {
                 Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
             }
 
-            input = GetString("enter the item's information 'name price [person...]' or 'done' to continue\n"); // MAYBE add a loop that forces the user to input correctly
+            input = GetString("Enter the item's information 'name price [person...]' or 'done' to continue\n" +
+            "If you don't specify anyone, everyone will contribute\n"); // MAYBE add a loop that forces the user to input correctly
 
             // Breaks the loop if the user enters 'done'
             if (input == "done") { break; }
@@ -125,6 +123,8 @@ internal class Program
                 }
             }
         }
+
+        HoldForKey();
     }
 
     // Adds a new item to the list of items
@@ -273,8 +273,8 @@ internal class Program
         // TODO
     }
 
-        // Calculates the values for a given item taking into account how many candidates are contributing
-    float ShareOf(Item item)
+    // Calculates the values for a given item taking into account how many candidates are contributing
+    static float ShareOf(Item item)
     {
         int buyers = 0;
 
@@ -306,7 +306,7 @@ internal class Program
         Console.WriteLine("owing the total amount of " + Math.Round(debt, 2, MidpointRounding.ToPositiveInfinity));
     }
 
-    void DisplayAllInfo()
+    static void DisplayAllInfo()
     {
         for (int i = 0; i < people.Count; i++)
         {
@@ -375,18 +375,14 @@ internal class Program
         return Console.ReadLine();
     }
 
-    float GetFloat(string prompt)
-    {
-        Console.Write(prompt);
-        return Convert.ToSingle(Console.ReadLine());
-    }
-
     private static void ListPeople()
     {
         for (int i = 0; i < people.Count; i++)
         {
             Console.WriteLine($"{i + 1}. {people[i].Name}");
         }
+
+        Console.WriteLine();
     }
 
     static void UpdatePerson(string name)
@@ -425,14 +421,16 @@ internal class Program
             {
                 for (int i = links.Count - 1; i >= 0; i--)
                 {
-                    if (links[i].Contributor.Name == person.Name)
+                    if (links[i].Item.Name == word) // MAYBE will bug out
                     {
-                        Console.WriteLine($"removing {links[i]}");
+                        Console.WriteLine($"Removed {links[i].Item.Name} from {person.Name}");
                         links.Remove(links[i]);
                     }
                 }
             }
         }
+
+        HoldForKey();
     }
 
     static void UpdateItem()
@@ -469,6 +467,7 @@ internal class Program
         public void Go()
         {
             // Console.Clear();
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             while (true)
             {
@@ -485,6 +484,9 @@ internal class Program
                 }
                 else if (input == "1" || input.ToLower() == "people")
                 {
+                    // Console.Clear(); DONKEY
+                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+                    Console.WriteLine("People:");
                     ListPeople();
                     break;
                 }
@@ -497,12 +499,21 @@ internal class Program
                 {
                     Console.WriteLine("Invalid input");
                 }
-
-                Console.ReadLine();
             }
+
+            HoldForKey();
         }
+
     }
 
+    private static void HoldForKey()
+    {
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+
+        // Console.Clear(); TODO remove when program is usable enough
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+    }
 
     public class AccessBranch : IBranch
     {
@@ -511,6 +522,9 @@ internal class Program
             Console.WriteLine("What would you like to access?\n" +
             "1. (TEST) Person\n" +
             "2. (NOT WORKING) Item");
+
+            // Console.Clear(); DONKEY
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             while (true)
             {
@@ -529,6 +543,8 @@ internal class Program
                 }
                 else
                 {
+                    // Console.Clear(); DONKEY
+                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
                     branch.Go();
                     break;
                 }
@@ -540,19 +556,20 @@ internal class Program
     {
         public void Go()
         {
+            // Prints the list of people
+            Console.WriteLine("List of people:");
+            foreach (Person person in people)
+            {
+                Console.WriteLine(person.Name);
+            }
+            Console.WriteLine();
+
             while (true)
             {
-                // Prints the list of people
-                Console.WriteLine("List of people:");
-                foreach (Person person in people)
-                {
-                    Console.WriteLine(person.Name);
-                }
-
                 // Prompts the user to input a person's name to access
                 string input = GetString("Type in a [name] to access, 'done' to go back: ");
 
-                if (input == "cancel" || input == "")
+                if (input == "done" || input == "")
                 {
                     return;
                 }
@@ -563,6 +580,8 @@ internal class Program
                 }
                 else
                 {
+                    // Console.Clear(); DONKEY
+                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
                     UpdatePerson(input);
                 }
             }
@@ -590,6 +609,7 @@ internal class Program
         public void Go()
         {
             // Console.Clear();
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             Console.Write("Edit the list of\n" +
             "1. People\n" +
