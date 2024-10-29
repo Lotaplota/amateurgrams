@@ -115,10 +115,19 @@
                 // If more than 2 command line arguments are provided, links the item only to the specified people
                 else if (words.Length > 2)
                 {
-                    // Loops starting from the third command line argument
+                    // Creates links between the item and each person in the command-line arguments, if the person exists
                     for (int i = 2; i < words.Length; i++)
                     {
-                        links.Add(new(GetPerson(words[i]), newItem));
+                        if (GetPerson(words[i]) != null)
+                        {
+                            Console.WriteLine($"{words[i]} is not on the list");
+                        }
+                        else
+                        {
+                            Link newLink = new(GetPerson(words[i]), newItem);
+                            links.Add(newLink);
+                            Console.WriteLine($"Adding the link {newLink}");
+                        }
                     }
                 }
             }
