@@ -24,13 +24,13 @@
             
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
-            "1. list people, items, or links\n" +
+            "1. Display the lists of people, items, or links (DONE)\n" +
             "2. describe or update person or item\n" +
             "3. edit people or item list\n" +
             "4. print all info (TEST)\n" +
             "exit. quits the application\n");
 
-            input = GetString("Enter an option: ");
+            input = GetString("Enter a 'number': ");
 
             IBranch command = input switch
             {
@@ -91,11 +91,13 @@
                 Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
             }
 
-            input = GetString("Enter the item's information 'name price [person...]' or 'done' to continue\n" +
-            "If you don't specify anyone, everyone will contribute\n"); // MAYBE add a loop that forces the user to input correctly
+            input = GetString("Now enter the item's prices and contributors\n" +
+            "If you don't specify anyone, everyone will contribute\n" + // MAYBE add a loop that forces the user to input correctly
+            "Enter 'name price [person...]' or 'done' to continue\n");
 
             // Breaks the loop if the user enters 'done'
-            if (input == "done") { break; }
+            if (input == "done" || input == "") { break; }
+            // Splits the user's input into words to specify the item's contributors
             else
             {
                 // Splitting the input into an array of words to adress possible interpretations
@@ -300,14 +302,21 @@
     }
 
     // Displays the links that contain the specified person
-    static void DisplayLinksFrom(Person person)
+    static void DisplayLinksFrom(Person person, int indentation)
     {
         Console.WriteLine($"{person.Name} bought: ");
         for (int i = 0; i < links.Count; i++)
         {
+            // Indents the text if the user chooses by the specified amount
+            if (indentation > 0)
+            {
+                Console.Write(String.Concat(Enumerable.Repeat("    ", indentation)));
+            }
+
+            // Prints the item's name and how much said person contributes
             if (links[i].Contributor.Name == person.Name)
             {
-                Console.WriteLine($"    {links[i].Item.Name} for {ShareOf(links[i].Item)}");
+                Console.WriteLine($"{links[i].Item.Name} for {ShareOf(links[i].Item)}");
             }
         }
     }
@@ -324,7 +333,7 @@
             float owedValue = 0;
 
             // Displaying all items associated with such person
-            DisplayLinksFrom(currentPerson);
+            DisplayLinksFrom(currentPerson, 1);
 
 
             // Sums the value of all items the current person contributes
@@ -485,9 +494,27 @@
         }
     }
 
+    // Prints all of the links in the list
     static void ListLinks()
     {
-        // TODO
+        // Console.Clear();
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+        foreach ( Person person in people)
+        {
+            foreach (Link link in links)
+            {
+                if (link.Contributor.Name == person.Name)
+                Console.WriteLine(link);
+            }
+        }
+
+        Console.WriteLine();
+        // Not using this one for differentiation purposes
+        // foreach (Person person in people)
+        // {
+        //     // DisplayLinksFrom(person, 0);
+        // }
     }
 
     public interface IBranch
@@ -507,7 +534,7 @@
                 Console.Write("Display the list of\n" +
                 "1. People\n" +
                 "2. Items\n" +
-                "3. Links (NOT WORKING)\n" +
+                "3. Links\n" +
                 "Type in one of the options or 'cancel' to go back: ");
 
                 string? input = Console.ReadLine();
