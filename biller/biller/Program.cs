@@ -35,9 +35,8 @@
             IBranch command = input switch
             {
                 "1" => new ListBranch(),
-                "2" => new AccessBranch(),
-                "3" => new EditListBranch(),
-                "4" => new InfoBranch(),
+                "2" => new EditListBranch(),
+                "3" => new InfoBranch(),
                 // New commands go here
                 _ => new VoidBranch()
             };
@@ -539,10 +538,12 @@
 
                 string? input = Console.ReadLine();
 
+                // Returns if user chooses to
                 if (input == "cancel" || input == "")
                 {
                     return;
                 }
+                // Executes the specified command
                 else if (input == "1" || input.ToLower() == "people")
                 {
                     ListPeople();
