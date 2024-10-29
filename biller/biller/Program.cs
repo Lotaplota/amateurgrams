@@ -25,9 +25,8 @@
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
             "1. Display the lists of people, items, or links (DONE)\n" +
-            "2. describe or update person or item\n" +
-            "3. edit people or item list\n" +
-            "4. print all info (TEST)\n" +
+            "2. edit people or item list\n" +
+            "3. print all info (TEST)\n" +
             "exit. quits the application\n");
 
             input = GetString("Enter a 'number': ");
@@ -87,7 +86,7 @@
 
             for (int i = 0; i < items.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {items[i].Name} {items[i].Price}");
+                Console.WriteLine($"{i + 1}. {items[i].Tag} {items[i].Price}");
             }
 
             input = GetString("Now enter the item's prices and contributors\n" +
@@ -137,6 +136,31 @@
         }
     }
 
+    static void AddPerson(string name)
+    {
+        Person newPerson = new(name);
+
+        // Adds the person if not already on the list
+        if (GetPerson(name) == null)
+        {
+            Console.WriteLine($"{name} was added to the list"); // DEBUG PRINT
+            people.Add(newPerson);
+        }
+        // Warns the user if the person is already in the list and returns from the method
+        else
+        {
+            Console.WriteLine($"{name} is already on the list!");
+            return;
+        }
+        
+        // Links the person to all of the items in the list
+        foreach (Item item in items)
+        {
+            Console.WriteLine($"{newPerson.Name} now contributes to {item.Tag}");
+            links.Add(new(newPerson, item));
+        }
+    }
+
     // Adds a new item to the list of items
     // Links that item to everyone on the list if nobody else is specified
     void AddItem()
@@ -169,30 +193,11 @@
         }
     }
 
-    static void AddPerson(string name)
+    static void AddItems()
     {
-        Person newPerson = new(name);
-
-        // Adds the person if not already on the list
-        if (GetPerson(name) == null)
-        {
-            Console.WriteLine($"{name} was added to the list"); // DEBUG PRINT
-            people.Add(newPerson);
-        }
-        // Warns the user if the person is already in the list and returns from the method
-        else
-        {
-            Console.WriteLine($"{name} is already on the list!");
-            return;
-        }
-        
-        // Links the person to all of the items in the list
-        foreach (Item item in items)
-        {
-            Console.WriteLine($"{newPerson.Name} contributes to {item.Name}");
-            links.Add(new(newPerson, item));
-        }
+        // CONTINUE
     }
+
 
     static void RemovePerson(string name)
     {
@@ -221,15 +226,15 @@
         }
     }
 
-    static void RemoveItem(string name)
+    static void RemoveItem(string tag)
     {
-        // Retrieves the person to be removed if name matches
-        Item removee = GetItem(name);
+        // Retrieves the item to be removed if name matches
+        Item removee = GetItem(tag);
 
-        // If the person returned was null, warns the user that the person's name is not in the list and returns from the method
+        // If the item returned was null, warns the user that the item's tag is not in the list and returns from the method
         if (removee == null)
         {
-            Console.WriteLine($"can't remove {name} because it's not on the list!"); // DEBUG PRINT
+            Console.WriteLine($"Couldn't remove {tag} because it's not on the item list!");
             return;
         }
         else
@@ -237,10 +242,10 @@
             items.Remove(removee);
         }
 
-        // Loops through the list of links in reverse order, removing the link if the item name matches
+        // Loops through the list of links in reverse order, removing the link if the item tag matches
         for (int i = links.Count - 1; i >= 0; i--)
         {
-            if (links[i].Item.Name == name)
+            if (links[i].Item.Tag == tag)
             {
                 Console.WriteLine($"{links[i]} removed");
                 links.Remove(links[i]);
@@ -253,16 +258,21 @@
     // If the entered person is not on the list, adds the person
     static void EditPersonList()
     {
+        // Console.Clear();
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
         // Prints, in one line, the name of each person on the list
-        Console.WriteLine("People on the list: ");
-        foreach (var person in people)
-        {
-            Console.Write(person.Name + " ");
-        }
-        Console.WriteLine("\nNow enter a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
+        ListPeople();
+        Console.WriteLine("Now type in a list of people. People who match the names in the list will be removed. People that aren't on the list will be added\n" +
+        "Enter 'done' to go back");
 
         string input = Console.ReadLine();
         string[] names = input.Split();
+
+        if (input == "done" || input == "")
+        {
+            return;
+        }
 
         foreach (string name in names)
         {
@@ -280,7 +290,36 @@
 
     static void EditItemList()
     {
-        // TODO
+        // Prints, in one line, the name of each person on the list
+        ListItems();
+        Console.WriteLine("If you want to remove any items, type in their tags.\n" +
+        "If you want to add more items, type 'add'" +
+        "Enter 'done' to go back");
+
+        string input = Console.ReadLine();
+        string[] tags = input.Split();
+
+
+        // Allows the user to add more items to the list
+        if (input == "add")
+        {
+            AddItems();
+            return;
+        }
+
+        foreach (string tag in tags)
+        {
+            // Removes item if if exists
+            if (GetItem(tag) == null)
+            {
+                Console.WriteLine($"Couldn't remove {tag} because it doesn't exist");
+            }
+            else
+            {
+                Console.WriteLine($"Removed {tag}");
+                RemoveItem(tag);
+            }
+        }
     }
 
     // Calculates the values for a given item taking into account how many candidates are contributing
@@ -290,7 +329,7 @@
 
         for (int i = 0; i < links.Count; i++)
         {
-            if (links[i].Item.Name == item.Name)
+            if (links[i].Item.Tag == item.Tag)
             {
                 buyers++;
             }
@@ -315,7 +354,7 @@
             // Prints the item's name and how much said person contributes
             if (links[i].Contributor.Name == person.Name)
             {
-                Console.WriteLine($"{links[i].Item.Name} for {ShareOf(links[i].Item)}");
+                Console.WriteLine($"{links[i].Item.Tag} for {ShareOf(links[i].Item)}");
             }
         }
     }
@@ -381,7 +420,7 @@
     {
         foreach (Item item in items)
         {
-            if (item.Name == name)
+            if (item.Tag == name)
             {
                 return item;
             }
@@ -395,20 +434,6 @@
     {
         Console.Write(prompt);
         return Console.ReadLine();
-    }
-
-    private static void ListPeople()
-    {
-        // Console.Clear(); DONKEY
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
-        Console.WriteLine("People:");
-        for (int i = 0; i < people.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {people[i].Name}");
-        }
-
-        Console.WriteLine();
     }
 
     static void UpdatePerson(string name)
@@ -426,7 +451,7 @@
         }
         foreach (Item item in theirItems)
         {
-            Console.WriteLine($"{item.Name}");
+            Console.WriteLine($"{item.Tag}");
         }
 
         string input = GetString("Type in the [item...] you want to add/remove, or 'cancel' to go back: ");
@@ -453,9 +478,9 @@
                 for (int i = links.Count - 1; i >= 0; i--)
                 {
                     // Removes the link that links the person to the item
-                    if (links[i].Item.Name == word && links[i].Contributor.Name == person.Name) // MAYBE will bug out
+                    if (links[i].Item.Tag == word && links[i].Contributor.Name == person.Name) // MAYBE will bug out
                     {
-                        Console.WriteLine($"Removed {links[i].Item.Name} from {person.Name}");
+                        Console.WriteLine($"Removed {links[i].Item.Tag} from {person.Name}");
                         links.Remove(links[i]);
                     }
                 }
@@ -470,6 +495,20 @@
         // TODO
     }
 
+    private static void ListPeople()
+    {
+        // Console.Clear(); DONKEY
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+        Console.WriteLine("People:");
+        for (int i = 0; i < people.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {people[i].Name}");
+        }
+
+        Console.WriteLine();
+    }
+
     static void ListItems()
     {
         // Console.Clear(); DONKEY
@@ -481,15 +520,15 @@
         Console.WriteLine("Items:");
         foreach (var item in items)
         {
-            if (item.Name.Length > maxLength)
+            if (item.Tag.Length > maxLength)
             {
-                maxLength = item.Name.Length;
+                maxLength = item.Tag.Length;
             }
         }
 
         foreach (var item in items)
         {
-            Console.WriteLine($"{item.Name.PadRight(maxLength + 4)}{item.Price}");
+            Console.WriteLine($"{item.Tag.PadRight(maxLength + 4)}{item.Price}");
         }
     }
 
@@ -579,95 +618,6 @@
         Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
     }
 
-    public class AccessBranch : IBranch
-    {
-        public void Go()
-        {
-            Console.WriteLine("What would you like to access?\n" +
-            "1. (TEST) Person\n" +
-            "2. (NOT WORKING) Item");
-
-            // Console.Clear(); DONKEY
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
-            while (true)
-            {
-                string input = GetString("Choose an option (name or number): ");
-
-                IBranch branch = input switch
-                {
-                    "1" => new AccessPersonBranch(),
-                    "2" => new AccessItemBranch(),
-                    _ => new VoidBranch()
-                };
-
-                if (branch.GetType() == typeof(VoidBranch))
-                {
-                    Console.WriteLine("Invalid input");
-                }
-                else
-                {
-                    // Console.Clear(); DONKEY
-                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-                    branch.Go();
-                    break;
-                }
-            }
-        }
-    }
-
-    public class AccessPersonBranch : IBranch
-    {
-        public void Go()
-        {
-            // Prints the list of people
-            Console.WriteLine("List of people:");
-            foreach (Person person in people)
-            {
-                Console.WriteLine(person.Name);
-            }
-            Console.WriteLine();
-
-            while (true)
-            {
-                // Prompts the user to input a person's name to access
-                string input = GetString("Type in a [name] to access, 'done' to go back: ");
-
-                if (input == "done" || input == "")
-                {
-                    return;
-                }
-
-                if (GetPerson(input) == null)
-                {
-                    Console.WriteLine("Invalid input");
-                }
-                else
-                {
-                    // Console.Clear(); DONKEY
-                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-                    UpdatePerson(input);
-                }
-            }
-        }
-    }
-
-    public class AccessItemBranch : IBranch
-    {
-        public void Go()
-        {
-            // TODO
-        }
-    }
-
-    public class UpdateBranch : IBranch
-    {
-        public void Go()
-        {
-            // MAYBE this is useless
-        }
-    }
-
     public class EditListBranch : IBranch
     {
         public void Go()
@@ -677,17 +627,19 @@
 
             Console.Write("Edit the list of\n" +
             "1. People\n" +
-            "2. Items (NOT IMPLEMENTED)\n" +
+            "2. Items (TEST)\n" +
             "Type in one the options (name or number) or 'cancel' to go back: ");
 
             while (true)
             {
                 string? input = Console.ReadLine();
+
+                // Returns if user chooses to
                 if (input == "cancel" || input == "")
                 {
                     return;
                 }
-
+                // Executes the specified command
                 if (input == "1" || input.ToLower() == "people")
                 {
                     EditPersonList();
@@ -744,12 +696,12 @@
 
     public class Item
     {
-        public string? Name {get; init;}
+        public string? Tag {get; init;}
         public float Price {get; init;}
 
         public Item(string name, float price)
         {
-            Name = name;
+            Tag = name;
             Price = price;
         }
     }
@@ -767,7 +719,7 @@
 
         public override string ToString()
         {
-            return $"'{Contributor.Name} contributes to {Item.Name}'";
+            return $"'{Contributor.Name} contributes to {Item.Tag}'";
         }
     }
 }
