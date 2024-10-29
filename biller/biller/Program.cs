@@ -8,7 +8,6 @@
     {
         PopulatePeople();
         PopulateItems();
-        DisplayAllInfo();
         GetMainInput();
     }
 
@@ -20,11 +19,15 @@
         
         while (input != "exit")
         {
+            // Console.Clear(); DONKEY
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
             "1. list people, items, or links\n" +
-            "2. describe and update person or item\n" +
+            "2. describe or update person or item\n" +
             "3. edit people or item list\n" +
+            "4. print all info (TEST)\n" +
             "exit. quits the application\n");
 
             input = GetString("Enter an option: ");
@@ -34,6 +37,7 @@
                 "1" => new ListBranch(),
                 "2" => new AccessBranch(),
                 "3" => new EditListBranch(),
+                "4" => new InfoBranch(),
                 // New commands go here
                 _ => new VoidBranch()
             };
@@ -53,8 +57,6 @@
             // Enters the chosen branch
             else
             {
-                // Console.Clear(); DONKEY
-                Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
                 command.Go();
             }
         }
@@ -118,7 +120,7 @@
                     // Creates links between the item and each person in the command-line arguments, if the person exists
                     for (int i = 2; i < words.Length; i++)
                     {
-                        if (GetPerson(words[i]) != null)
+                        if (GetPerson(words[i]) == null)
                         {
                             Console.WriteLine($"{words[i]} is not on the list");
                         }
@@ -132,8 +134,6 @@
                 }
             }
         }
-
-        HoldForKey();
     }
 
     // Adds a new item to the list of items
@@ -299,30 +299,33 @@
         return (float)Math.Round(item.Price / buyers, 2, MidpointRounding.ToPositiveInfinity);
     }
 
-    void DisplayInfo(Person person)
+    // Displays the links that contain the specified person
+    static void DisplayLinksFrom(Person person)
     {
-        float debt = 0;
-
         Console.WriteLine($"{person.Name} bought: ");
         for (int i = 0; i < links.Count; i++)
         {
             if (links[i].Contributor.Name == person.Name)
             {
-                Console.WriteLine(links[i].Item.Name + " for " + ShareOf(links[i].Item));
-                debt += ShareOf(links[i].Item);
+                Console.WriteLine($"    {links[i].Item.Name} for {ShareOf(links[i].Item)}");
             }
         }
-        Console.WriteLine("owing the total amount of " + Math.Round(debt, 2, MidpointRounding.ToPositiveInfinity));
     }
 
-    static void DisplayAllInfo()
+    static void DisplaySummary()
     {
         for (int i = 0; i < people.Count; i++)
         {
+            // Initializing the person and their items
             Person currentPerson = people[i];
             List<Item> theirItems = GetItemsFrom(people[i]);
 
+            // Stores the total value owed by the person
             float owedValue = 0;
+
+            // Displaying all items associated with such person
+            DisplayLinksFrom(currentPerson);
+
 
             // Sums the value of all items the current person contributes
             for (int j = 0; j < theirItems.Count; j++)
@@ -330,8 +333,10 @@
                 owedValue += ShareOf(theirItems[j]);
             }
 
-            Console.WriteLine($"{currentPerson.Name} owes {owedValue}");
+            Console.WriteLine($"owing a total of {owedValue}\n");
         }
+
+        HoldForKey();
     }
 
     static List<Item> GetItemsFrom(Person person)
@@ -386,6 +391,10 @@
 
     private static void ListPeople()
     {
+        // Console.Clear(); DONKEY
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+        Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
         {
             Console.WriteLine($"{i + 1}. {people[i].Name}");
@@ -422,15 +431,21 @@
 
         foreach (string word in words)
         {
-            if (GetItem(word) == null)
+            // Initializes the item to be removed
+            Item currentItem = GetItem(word);
+
+            if (currentItem == null)
             {
                 Console.WriteLine($"{word} is not a valid item");
             }
+
             else
             {
+                // Loops through the link list
                 for (int i = links.Count - 1; i >= 0; i--)
                 {
-                    if (links[i].Item.Name == word) // MAYBE will bug out
+                    // Removes the link that links the person to the item
+                    if (links[i].Item.Name == word && links[i].Contributor.Name == person.Name) // MAYBE will bug out
                     {
                         Console.WriteLine($"Removed {links[i].Item.Name} from {person.Name}");
                         links.Remove(links[i]);
@@ -449,9 +464,13 @@
 
     static void ListItems()
     {
+        // Console.Clear(); DONKEY
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        
         // Initializing variable to store the amount of letters in the biggest item name
         int maxLength = 0; 
 
+        Console.WriteLine("Items:");
         foreach (var item in items)
         {
             if (item.Name.Length > maxLength)
@@ -464,6 +483,11 @@
         {
             Console.WriteLine($"{item.Name.PadRight(maxLength + 4)}{item.Price}");
         }
+    }
+
+    static void ListLinks()
+    {
+        // TODO
     }
 
     public interface IBranch
@@ -483,6 +507,7 @@
                 Console.Write("Display the list of\n" +
                 "1. People\n" +
                 "2. Items\n" +
+                "3. Links (NOT WORKING)\n" +
                 "Type in one of the options or 'cancel' to go back: ");
 
                 string? input = Console.ReadLine();
@@ -493,15 +518,17 @@
                 }
                 else if (input == "1" || input.ToLower() == "people")
                 {
-                    // Console.Clear(); DONKEY
-                    Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-                    Console.WriteLine("People:");
                     ListPeople();
                     break;
                 }
                 else if (input == "2" || input.ToLower() == "items")
                 {
                     ListItems();
+                    break;
+                }
+                else if (input == "3" || input.ToLower() == "links")
+                {
+                    ListLinks();
                     break;
                 }
                 else
@@ -622,8 +649,8 @@
 
             Console.Write("Edit the list of\n" +
             "1. People\n" +
-            "2. Items\n" +
-            "Type in of the options (name or number) or 'cancel' to go back: ");
+            "2. Items (NOT IMPLEMENTED)\n" +
+            "Type in one the options (name or number) or 'cancel' to go back: ");
 
             while (true)
             {
@@ -632,6 +659,7 @@
                 {
                     return;
                 }
+
                 if (input == "1" || input.ToLower() == "people")
                 {
                     EditPersonList();
@@ -647,6 +675,19 @@
                     Console.WriteLine("Invalid input");
                 }
             }
+
+            HoldForKey();
+        }
+    }
+
+    public class InfoBranch : IBranch
+    {
+        public void Go()
+        {
+            // Console.Clear();
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+            DisplaySummary();
         }
     }
 
@@ -698,7 +739,7 @@
 
         public override string ToString()
         {
-            return $"{Contributor.Name} bought {Item.Name} for {Item.Price}";
+            return $"'{Contributor.Name} contributes to {Item.Name}'";
         }
     }
 }
