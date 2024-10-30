@@ -1,4 +1,6 @@
-﻿internal class Program
+﻿using System.Runtime.InteropServices.Marshalling;
+
+internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -19,14 +21,14 @@
         
         while (input != "exit")
         {
-            // Console.Clear(); DONKEY
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.Clear();
+            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
             
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
             "1. Display the lists of people, items, or links (DONE)\n" +
             "2. edit people or item list\n" +
-            "3. change data of a person or item" +
+            "3. change data of a person or item\n" +
             "4. print all info (TEST)\n" +
             "exit. quits the application\n");
 
@@ -64,9 +66,10 @@
 
     static void PopulatePeople()
     {
-        string input;
+        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear();
 
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        string input;
 
         input = GetString("enter each user's name: ");
         string[] words = input.Split();
@@ -84,6 +87,8 @@
     {
         while (true)
         {
+            Console.Clear();
+
             string input;
 
             for (int i = 0; i < items.Count; i++)
@@ -163,13 +168,10 @@
         }
     }
 
-    // Adds a new item to the list of items
-    // Links that item to everyone on the list if nobody else is specified
-    void AddItems()
+    // Prompts the user to add items to the list, asking for a tag and a price
+    // Can link the new item to everyone at once or just to the specified people
+    static void AddItems()
     {
-        // Console.WriteLine();
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
         string input;
 
         while (true)
@@ -208,7 +210,9 @@
                 continue;
             }
             
+            // Initializing item and adding it to the list
             newItem = new(words[0], itemPrice);
+            items.Add(newItem);
 
             // If no person is specified, links everyone to the current item
             if (words.Length == 2)
@@ -303,8 +307,8 @@
     // If the entered person is not on the list, adds the person
     static void EditPersonList()
     {
-        // Console.Clear();
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear();
+        // // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
         // Prints, in one line, the name of each person on the list
         ListPeople();
@@ -338,12 +342,11 @@
         // Prints, in one line, the name of each person on the list
         ListItems();
         Console.WriteLine("If you want to remove any items, type in their tags.\n" +
-        "If you want to add more items, type 'add'" +
+        "If you want to add more items, type 'add'\n" +
         "Enter 'done' to go back");
 
         string input = Console.ReadLine();
         string[] tags = input.Split();
-
 
         // Allows the user to add more items to the list
         if (input == "add")
@@ -351,6 +354,8 @@
             AddItems();
             return;
         }
+
+        Console.Clear();
 
         foreach (string tag in tags)
         {
@@ -364,7 +369,11 @@
                 Console.WriteLine($"Removed {tag}");
                 RemoveItem(tag);
             }
+
+            Console.WriteLine();
         }
+
+        HoldForKey();
     }
 
     // Calculates the values for a given item taking into account how many candidates are contributing
@@ -542,8 +551,8 @@
 
     private static void ListPeople()
     {
-        // Console.Clear(); DONKEY
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear(); 
+        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
         Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
@@ -556,8 +565,8 @@
 
     static void ListItems()
     {
-        // Console.Clear(); DONKEY
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear();
+        // // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
         
         // Initializing variable to store the amount of letters in the biggest item name
         int maxLength = 0; 
@@ -575,13 +584,15 @@
         {
             Console.WriteLine($"{item.Tag.PadRight(maxLength + 4)}{item.Price}");
         }
+
+        Console.WriteLine();
     }
 
     // Prints all of the links in the list
     static void ListLinks()
     {
-        // Console.Clear();
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear();
+        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
         foreach ( Person person in people)
         {
@@ -609,8 +620,8 @@
     {
         public void Go()
         {
-            // Console.Clear();
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.Clear();
+            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             while (true)
             {
@@ -618,7 +629,7 @@
                 "1. People\n" +
                 "2. Items\n" +
                 "3. Links\n" +
-                "Type in one of the options or 'cancel' to go back: ");
+                "Type in one of the (number) options or 'cancel' to go back: ");
 
                 string? input = Console.ReadLine();
 
@@ -659,16 +670,16 @@
         Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
 
-        // Console.Clear(); TODO remove when program is usable enough
-        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Console.Clear();
+        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
     }
 
     public class EditListBranch : IBranch
     {
         public void Go()
         {
-            // Console.Clear();
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.Clear();
+            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             Console.Write("Edit the list of\n" +
             "1. People\n" +
@@ -700,8 +711,6 @@
                     Console.WriteLine("Invalid input");
                 }
             }
-
-            HoldForKey();
         }
     }
 
@@ -717,8 +726,8 @@
     {
         public void Go()
         {
-            // Console.Clear();
-            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.Clear();
+            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
             DisplaySummary();
         }
