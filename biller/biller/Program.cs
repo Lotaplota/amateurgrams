@@ -26,7 +26,8 @@
             Console.WriteLine("MAIN MENU\n" +
             "1. Display the lists of people, items, or links (DONE)\n" +
             "2. edit people or item list\n" +
-            "3. print all info (TEST)\n" +
+            "3. change data of a person or item" +
+            "4. print all info (TEST)\n" +
             "exit. quits the application\n");
 
             input = GetString("Enter a 'number': ");
@@ -35,7 +36,8 @@
             {
                 "1" => new ListBranch(),
                 "2" => new EditListBranch(),
-                "3" => new InfoBranch(),
+                "3" => new ChangeBranch(),
+                "4" => new InfoBranch(),
                 // New commands go here
                 _ => new VoidBranch()
             };
@@ -163,41 +165,84 @@
 
     // Adds a new item to the list of items
     // Links that item to everyone on the list if nobody else is specified
-    void AddItem()
+    void AddItems()
     {
-        // Prompts for the new item name and price, then separates the input into an array
-        string? input = GetString("name the item and its price\n" +
-        "if you don't specify anyone, everyone will contribute\n");
-        string[] words = input.Split();
+        // Console.WriteLine();
+        Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
 
-        // Creates a new item using the given information and adds it to the list
-        Item newItem = new(words[0], Convert.ToSingle(words[1]));
-        items.Add(newItem);
+        string input;
 
-        // If 2 arguments are given, links the item to everyone
-        if (words.Length == 2)
+        while (true)
         {
-            for (int i = 0; i < people.Count; i++)
+            ListItems();
+            Item newItem;
+            float itemPrice = 0;
+
+            // Prompts for the new item name and price, then separates the input into an array
+            input = GetString("Enter the item's prices and contributors\n" +
+                "If you don't specify anyone, everyone will contribute\n" + 
+                "Enter 'name price [person...]' or 'done' to continue\n");
+            string[] words = input.Split();
+
+            // Returns if user chooses to
+            if (input == "done" || input == "")
             {
-                links.Add(new(people[i], newItem));
+                return;
             }
-        }
-        // If more than 2 command line arguments are given, links the item to the specified people
-        // starting from the 3rd command line argument
-        else
-        {
-            for (int i = 2; i < words.Length; i++)
+
+            // Checking if the number of arguments is bigger than 2
+            if (words.Length < 2 || Convert.ToSingle(words[1]) == 0)
             {
-                links.Add(new(GetPerson(words[i]), newItem));
+                Console.WriteLine("Invalid input");
+                continue;
+            }
+
+            // Checking if second argument can be converted to a float
+            try
+            {
+                itemPrice = Convert.ToSingle(words[1]);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("second argument must be numeric");
+                continue;
+            }
+            
+            newItem = new(words[0], itemPrice);
+
+            // If no person is specified, links everyone to the current item
+            if (words.Length == 2)
+            {
+                foreach (Person person in people)
+                {
+                    links.Add(new(person, newItem));
+                }
+            }
+
+            // If more than 2 command line arguments are provided, links the item only to the specified people
+            else if (words.Length > 2)
+            {
+                // Creates links between the item and each person in the command-line arguments, if the person exists
+                for (int i = 2; i < words.Length; i++)
+                {
+                    // Initializing person to receive the item
+                    Person receiver = GetPerson(words[i]);
+                    
+                    // Adding link between person and item to the list if the person exists
+                    if (receiver == null)
+                    {
+                        Console.WriteLine($"{words[i]} is not on the list");
+                    }
+                    else
+                    {
+                        Link newLink = new(receiver, newItem);
+                        links.Add(newLink);
+                        Console.WriteLine($"Adding the link {newLink}");
+                    }
+                }
             }
         }
     }
-
-    static void AddItems()
-    {
-        // CONTINUE
-    }
-
 
     static void RemovePerson(string name)
     {
@@ -657,6 +702,14 @@
             }
 
             HoldForKey();
+        }
+    }
+
+    public class ChangeBranch : IBranch
+    {
+        public void Go()
+        {
+            // TODO
         }
     }
 
