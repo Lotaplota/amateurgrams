@@ -76,66 +76,6 @@
         }
     }
 
-    static void PopulateItems()
-    {
-        while (true)
-        {
-            Clear();
-
-            string? input;
-
-            for (int i = 0; i < items.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {items[i].Tag} {items[i].Price}");
-            }
-
-            input = GetString("Now enter the item's prices and contributors\n" +
-            "If you don't specify anyone, everyone will contribute\n" + // MAYBE add a loop that forces the user to input correctly
-            "Enter 'name price [person...]' or 'done' to continue\n");
-
-            // Breaks the loop if the user enters 'done'
-            if (input == "done" || input == "") { break; }
-            // Splits the user's input into words to specify the item's contributors
-            else
-            {
-                // Splitting the input into an array of words to adress possible interpretations
-                string[] words = input!.Split();
-
-                // Creates a new item with the current information and adds it to the list of items
-                Item newItem = new(words[0], Convert.ToSingle(words[1]));
-                items.Add(newItem);
-
-                // If no person is specified, links everyone to the current item
-                if (words.Length == 2)
-                {
-                    for (int i = 0; i < people.Count; i++)
-                    {
-                        links.Add(new(people[i], newItem));
-                    }
-                }
-
-                // If more than 2 command line arguments are provided, links the item only to the specified people
-                else if (words.Length > 2)
-                {
-                    // Creates links between the item and each person in the command-line arguments, if the person exists
-                    for (int i = 2; i < words.Length; i++)
-                    {
-                        if (GetPerson(words[i]) == null)
-                        {
-                            Console.WriteLine($"{words[i]} is not on the list");
-                        }
-                        else
-                        {
-                            Link newLink = new(GetPerson(words[i]), newItem);
-                            links.Add(newLink);
-                            Console.WriteLine($"Adding the link {newLink}");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     static void AddPerson(string name)
     {
         Person newPerson = new(name);
