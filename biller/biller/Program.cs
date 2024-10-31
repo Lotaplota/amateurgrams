@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices.Marshalling;
-
-internal class Program
+﻿internal class Program
 {
     static List<Person> people = [];
     static List<Link> links = [];
@@ -9,7 +7,7 @@ internal class Program
     static void Main()
     {
         PopulatePeople();
-        PopulateItems();
+        AddItems();
         GetMainInput();
     }
 
@@ -21,8 +19,7 @@ internal class Program
         
         while (input != "exit")
         {
-            Console.Clear();
-            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Clear();
             
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n" +
@@ -66,8 +63,7 @@ internal class Program
 
     static void PopulatePeople()
     {
-        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-        Console.Clear();
+        Clear();
 
         string input;
 
@@ -87,7 +83,7 @@ internal class Program
     {
         while (true)
         {
-            Console.Clear();
+            Clear();
 
             string input;
 
@@ -150,7 +146,6 @@ internal class Program
         // Adds the person if not already on the list
         if (GetPerson(name) == null)
         {
-            Console.WriteLine($"{name} was added to the list"); // DEBUG PRINT
             people.Add(newPerson);
         }
         // Warns the user if the person is already in the list and returns from the method
@@ -172,6 +167,8 @@ internal class Program
     // Can link the new item to everyone at once or just to the specified people
     static void AddItems()
     {
+        Clear();
+
         string input;
 
         while (true)
@@ -196,6 +193,7 @@ internal class Program
             if (words.Length < 2 || Convert.ToSingle(words[1]) == 0)
             {
                 Console.WriteLine("Invalid input");
+                HoldForKey();
                 continue;
             }
 
@@ -207,10 +205,11 @@ internal class Program
             catch (FormatException)
             {
                 Console.WriteLine("second argument must be numeric");
+                HoldForKey();
                 continue;
             }
             
-            // Initializing item and adding it to the list
+            // Initializes the item and adds it to the list
             newItem = new(words[0], itemPrice);
             items.Add(newItem);
 
@@ -231,7 +230,7 @@ internal class Program
                 {
                     // Initializing person to receive the item
                     Person receiver = GetPerson(words[i]);
-                    
+
                     // Adding link between person and item to the list if the person exists
                     if (receiver == null)
                     {
@@ -256,7 +255,7 @@ internal class Program
         // If the person returned was null, warns the user that the person's name is not in the list and returns from the method
         if (removee == null)
         {
-            Console.WriteLine($"can't remove {name} because they're not on the list!"); // DEBUG PRINT
+            Console.WriteLine($"can't remove {name} because they're not on the list!");
             return;
         }
         else
@@ -307,8 +306,7 @@ internal class Program
     // If the entered person is not on the list, adds the person
     static void EditPersonList()
     {
-        Console.Clear();
-        // // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Clear();
 
         // Prints, in one line, the name of each person on the list
         ListPeople();
@@ -355,7 +353,7 @@ internal class Program
             return;
         }
 
-        Console.Clear();
+        Clear();
 
         foreach (string tag in tags)
         {
@@ -551,8 +549,7 @@ internal class Program
 
     private static void ListPeople()
     {
-        Console.Clear(); 
-        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Clear();
 
         Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
@@ -565,8 +562,7 @@ internal class Program
 
     static void ListItems()
     {
-        Console.Clear();
-        // // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Clear();
         
         // Initializing variable to store the amount of letters in the biggest item name
         int maxLength = 0; 
@@ -591,8 +587,7 @@ internal class Program
     // Prints all of the links in the list
     static void ListLinks()
     {
-        Console.Clear();
-        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        Clear();
 
         foreach ( Person person in people)
         {
@@ -620,8 +615,7 @@ internal class Program
     {
         public void Go()
         {
-            Console.Clear();
-            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Clear();
 
             while (true)
             {
@@ -665,22 +659,23 @@ internal class Program
 
     }
 
+    static void Clear()
+    {
+        Console.WriteLine("\n--------------------------------------------------------------------------------------------------------------------------------\n");
+    }
+
     private static void HoldForKey()
     {
         Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
-
-        Console.Clear();
-        // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
     }
 
     public class EditListBranch : IBranch
     {
         public void Go()
         {
-            Console.Clear();
-            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
+            Clear();
+            
             Console.Write("Edit the list of\n" +
             "1. People\n" +
             "2. Items (TEST)\n" +
@@ -726,9 +721,8 @@ internal class Program
     {
         public void Go()
         {
-            Console.Clear();
-            // Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
-
+            Clear();
+            
             DisplaySummary();
         }
     }
