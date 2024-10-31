@@ -25,8 +25,8 @@
             Console.WriteLine("MAIN MENU\n" +
             "1. Display the lists of people, items, or links (DONE)\n" +
             "2. edit people or item list\n" +
-            "3. change data of a person or item\n" +
-            "4. print all info (TEST)\n" +
+            "3. change data of a person or item (TEST)\n" +
+            "4. print all info\n" +
             "exit. quits the application\n");
 
             input = GetString("Enter a 'number': ");
@@ -664,9 +664,18 @@
         Clear();
     }
 
+    // Prints a warning, padding lines around it and changing the console's colors
     static void BadPrompt(string warning)
     {
-        Console.WriteLine(warning + "\n");
+        Console.BackgroundColor = ConsoleColor.Red;
+        Console.ForegroundColor = ConsoleColor.Black;
+
+        Console.Write(warning);
+
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("\n");
+
         HoldForKey();
     }
 
@@ -713,6 +722,53 @@
     {
         public void Go()
         {
+            // Initializing branch
+            IBranch? nextBranch;
+
+            string? input = "";
+
+            while (input != "cancel") // MAYBE changing this condition to check if the branch is null
+            {
+
+                Console.WriteLine($"What would you like to change?\n"
+                + "1. A person\n"
+                + "2. An item");
+
+                input = GetString("Choose a 'number' or 'cancel' to go back: ");
+
+                nextBranch = input switch
+                {
+                    "1" => new ChangePersonBranch(),
+                    "2" => new ChangeItemBranch(),
+                    "cancel" => new VoidBranch(),
+                    _ => null
+                };
+
+                if (nextBranch == null)
+                {
+                    BadPrompt("Invalid input");
+                }
+                else
+                {
+                    nextBranch.Go();
+                    break;
+                }
+            }
+        }
+    }
+
+    public class ChangePersonBranch : IBranch
+    {
+        public void Go()
+        {
+            // TODO
+        }
+    }
+
+    public class ChangeItemBranch : IBranch
+    {
+        public void Go()
+        {
             // TODO
         }
     }
@@ -737,7 +793,7 @@
 
     public class Person
     {
-        public string Name {get; init;}
+        public string Name {get; set;}
 
         public Person(string name)
         {
@@ -752,12 +808,12 @@
 
     public class Item
     {
-        public string? Tag {get; init;}
-        public float Price {get; init;}
+        public string? Tag {get; set;}
+        public float Price {get; set;}
 
-        public Item(string name, float price)
+        public Item(string tag, float price)
         {
-            Tag = name;
+            Tag = tag;
             Price = price;
         }
     }
