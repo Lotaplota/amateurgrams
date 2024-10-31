@@ -8,13 +8,13 @@
     {
         PopulatePeople();
         AddItems();
-        GetMainInput();
+        // PopulateItems();
+        MainMenu();
     }
 
     // Shows the user a list of available options, then prompts them for an input
-    static void GetMainInput()
+    static void MainMenu()
     {
-
         string? input = "start";
         
         while (input != "exit")
@@ -25,8 +25,8 @@
             Console.WriteLine("MAIN MENU\n" +
             "1. Display the lists of people, items, or links (DONE)\n" +
             "2. edit people or item list\n" +
-            "3. change data of a person or item\n" +
-            "4. print all info (TEST)\n" +
+            "3. change data of a person or item (TEST)\n" +
+            "4. print all info\n" +
             "exit. quits the application\n");
 
             input = GetString("Enter a 'number': ");
@@ -50,7 +50,7 @@
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input");
+                    BadPrompt("Invalid input");
                 }
             }
             // Enters the chosen branch
@@ -65,18 +65,15 @@
     {
         Clear();
 
-        string input;
+        string? input;
 
         input = GetString("enter each user's name: ");
-        string[] words = input.Split();
+        string[] words = input!.Split();
 
-        for (int i = 0; i < words.Length; i++)
+        foreach (string word in words)
         {
-            Console.WriteLine($"Added {words[i]}");
-            people.Add(new Person(words[i]));
+            people.Add(new Person(word));
         }
-
-        HoldForKey();
     }
 
     static void PopulateItems()
@@ -85,7 +82,7 @@
         {
             Clear();
 
-            string input;
+            string? input;
 
             for (int i = 0; i < items.Count; i++)
             {
@@ -102,7 +99,7 @@
             else
             {
                 // Splitting the input into an array of words to adress possible interpretations
-                string[] words = input.Split();
+                string[] words = input!.Split();
 
                 // Creates a new item with the current information and adds it to the list of items
                 Item newItem = new(words[0], Convert.ToSingle(words[1]));
@@ -169,19 +166,19 @@
     {
         Clear();
 
-        string input;
+        string? input;
 
         while (true)
         {
             ListItems();
             Item newItem;
-            float itemPrice = 0;
+            // float itemPrice = 0; inlining? DONKEY
 
             // Prompts for the new item name and price, then separates the input into an array
-            input = GetString("Enter the item's prices and contributors\n" +
-                "If you don't specify anyone, everyone will contribute\n" + 
-                "Enter 'name price [person...]' or 'done' to continue\n");
-            string[] words = input.Split();
+            input = GetString("Enter the item's prices and contributors\n"
+                + "If you don't specify anyone, everyone will contribute\n"
+                + "Enter 'name price [person...]' or 'done' to continue\n");
+            string[] words = input!.Split();
 
             // Returns if user chooses to
             if (input == "done" || input == "")
@@ -190,26 +187,20 @@
             }
 
             // Checking if the number of arguments is bigger than 2
-            if (words.Length < 2 || Convert.ToSingle(words[1]) == 0)
+            if (words.Length < 2)
             {
-                Console.WriteLine("Invalid input");
-                HoldForKey();
+                BadPrompt("Argument must contain at least 2 words");
                 continue;
             }
 
             // Checking if second argument can be converted to a float
-            try
+            if (!float.TryParse(words[1], out float itemPrice))
             {
-                itemPrice = Convert.ToSingle(words[1]);
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("second argument must be numeric");
-                HoldForKey();
+                BadPrompt("Second argument must be numeric");
                 continue;
             }
             
-            // Initializes the item and adds it to the list
+            // Initializing item with it's name and price then adding it to the list
             newItem = new(words[0], itemPrice);
             items.Add(newItem);
 
@@ -234,7 +225,7 @@
                     // Adding link between person and item to the list if the person exists
                     if (receiver == null)
                     {
-                        Console.WriteLine($"{words[i]} is not on the list");
+                        BadPrompt($"{words[i]} is not on the list");
                     }
                     else
                     {
@@ -307,14 +298,14 @@
     static void EditPersonList()
     {
         Clear();
-
+        
         // Prints, in one line, the name of each person on the list
         ListPeople();
         Console.WriteLine("Now type in a list of people. People who match the names in the list will be removed. People that aren't on the list will be added\n" +
         "Enter 'done' to go back");
 
-        string input = Console.ReadLine();
-        string[] names = input.Split();
+        string? input = Console.ReadLine();
+        string[] names = input!.Split();
 
         if (input == "done" || input == "")
         {
@@ -343,8 +334,8 @@
         "If you want to add more items, type 'add'\n" +
         "Enter 'done' to go back");
 
-        string input = Console.ReadLine();
-        string[] tags = input.Split();
+        string? input = Console.ReadLine();
+        string[] tags = input!.Split();
 
         // Allows the user to add more items to the list
         if (input == "add")
@@ -465,7 +456,7 @@
         }
 
         // Returns null if no person is found
-        return null;
+        return null!;
     }
 
     static Item GetItem(string name)
@@ -479,7 +470,7 @@
         }
 
         // Returns null if no item is found
-        return null;
+        return null!;
     }
 
     static string? GetString(string prompt)
@@ -506,8 +497,8 @@
             Console.WriteLine($"{item.Tag}");
         }
 
-        string input = GetString("Type in the [item...] you want to add/remove, or 'cancel' to go back: ");
-        string[] words = input.Split();
+        string? input = GetString("Type in the [item...] you want to add/remove, or 'cancel' to go back: ");
+        string[] words = input!.Split();
 
         if (input == "cancel" || input == "")
         {
@@ -549,8 +540,8 @@
 
     private static void ListPeople()
     {
-        Clear();
-
+        Clear(); 
+        
         Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
         {
@@ -570,7 +561,7 @@
         Console.WriteLine("Items:");
         foreach (var item in items)
         {
-            if (item.Tag.Length > maxLength)
+            if (item.Tag!.Length > maxLength)
             {
                 maxLength = item.Tag.Length;
             }
@@ -578,7 +569,7 @@
 
         foreach (var item in items)
         {
-            Console.WriteLine($"{item.Tag.PadRight(maxLength + 4)}{item.Price}");
+            Console.WriteLine($"{item.Tag!.PadRight(maxLength + 4)}{item.Price}");
         }
 
         Console.WriteLine();
@@ -588,7 +579,7 @@
     static void ListLinks()
     {
         Clear();
-
+        
         foreach ( Person person in people)
         {
             foreach (Link link in links)
@@ -616,7 +607,7 @@
         public void Go()
         {
             Clear();
-
+            
             while (true)
             {
                 Console.Write("Display the list of\n" +
@@ -633,7 +624,7 @@
                     return;
                 }
                 // Executes the specified command
-                else if (input == "1" || input.ToLower() == "people")
+                else if (input == "1" || input!.ToLower() == "people")
                 {
                     ListPeople();
                     break;
@@ -668,6 +659,23 @@
     {
         Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
+
+        Clear();
+    }
+
+    // Prints a warning, padding lines around it and changing the console's colors
+    static void BadPrompt(string warning)
+    {
+        Console.BackgroundColor = ConsoleColor.Red;
+        Console.ForegroundColor = ConsoleColor.Black;
+
+        Console.Write(warning);
+
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("\n");
+
+        HoldForKey();
     }
 
     public class EditListBranch : IBranch
@@ -691,7 +699,7 @@
                     return;
                 }
                 // Executes the specified command
-                if (input == "1" || input.ToLower() == "people")
+                if (input == "1" || input!.ToLower() == "people")
                 {
                     EditPersonList();
                     break;
@@ -713,6 +721,53 @@
     {
         public void Go()
         {
+            // Initializing branch
+            IBranch? nextBranch;
+
+            string? input = "";
+
+            while (input != "cancel") // MAYBE changing this condition to check if the branch is null
+            {
+
+                Console.WriteLine($"What would you like to change?\n"
+                + "1. A person\n"
+                + "2. An item");
+
+                input = GetString("Choose a 'number' or 'cancel' to go back: ");
+
+                nextBranch = input switch
+                {
+                    "1" => new ChangePersonBranch(),
+                    "2" => new ChangeItemBranch(),
+                    "cancel" => new VoidBranch(),
+                    _ => null
+                };
+
+                if (nextBranch == null)
+                {
+                    BadPrompt("Invalid input");
+                }
+                else
+                {
+                    nextBranch.Go();
+                    break;
+                }
+            }
+        }
+    }
+
+    public class ChangePersonBranch : IBranch
+    {
+        public void Go()
+        {
+            // TODO
+        }
+    }
+
+    public class ChangeItemBranch : IBranch
+    {
+        public void Go()
+        {
             // TODO
         }
     }
@@ -722,7 +777,6 @@
         public void Go()
         {
             Clear();
-            
             DisplaySummary();
         }
     }
@@ -737,7 +791,7 @@
 
     public class Person
     {
-        public string Name {get; init;}
+        public string Name {get; set;}
 
         public Person(string name)
         {
@@ -752,12 +806,12 @@
 
     public class Item
     {
-        public string? Tag {get; init;}
-        public float Price {get; init;}
+        public string? Tag {get; set;}
+        public float Price {get; set;}
 
-        public Item(string name, float price)
+        public Item(string tag, float price)
         {
-            Tag = name;
+            Tag = tag;
             Price = price;
         }
     }
