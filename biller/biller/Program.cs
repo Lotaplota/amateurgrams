@@ -22,12 +22,12 @@
             Clear();
             
             // Prints the main menu, showing the user all of his options
-            Console.WriteLine("MAIN MENU\n" +
-            "1. Display the lists of people, items, or links (DONE)\n" +
-            "2. edit people or item list\n" +
-            "3. change data of a person or item (TEST)\n" +
-            "4. print all info\n" +
-            "exit. quits the application\n");
+            Console.WriteLine("MAIN MENU\n"
+            + "1. Display the lists of people, items, or links (DONE)\n"
+            + "2. edit people or item list\n"
+            + "3. change data of a person or item (TEST)\n"
+            + "4. Print all info (DONE)\n"
+            + "exit. quits the application\n");
 
             input = GetString("Enter a 'number': ");
 
@@ -67,9 +67,21 @@
 
         string? input;
 
-        input = GetString("enter each user's name: ");
-        string[] words = input!.Split();
+        while (true)
+        {
+            input = GetString("enter each user's name: ");
 
+            if (input == null || input == "")
+            {
+                BadPrompt("Invalid input");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        string[] words = input!.Split();
         foreach (string word in words)
         {
             people.Add(new Person(word));
@@ -668,10 +680,11 @@
 
             while (input != "cancel") // MAYBE changing this condition to check if the branch is null
             {
+                Clear();
 
                 Console.WriteLine($"What would you like to change?\n"
                 + "1. A person\n"
-                + "2. An item");
+                + "2. An item\n");
 
                 input = GetString("Choose a 'number' or 'cancel' to go back: ");
 
@@ -700,8 +713,38 @@
     {
         public void Go()
         {
-            // TODO
+            while (true)
+            {
+                ListPeople();
+                string? input = GetString("Which person would you like to access? ");
+
+                if (input == "cancel" || input == "")
+                {
+                    return;
+                }
+
+                Person person = GetPerson(input);
+
+                if (GetPerson(input) == null)
+                {
+                    BadPrompt(input + " is not on the list");
+                }
+                else
+                {
+                    Edit(person);
+                }
+            }
         }
+    }
+
+    static void Edit(Person person)
+    {
+        // TODO
+    }
+
+    static void Edit(Item item)
+    {
+        // TODO
     }
 
     public class ChangeItemBranch : IBranch
