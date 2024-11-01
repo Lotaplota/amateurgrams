@@ -739,9 +739,9 @@
                     return;
                 }
 
-                Person person = GetPerson(input);
+                Person person = GetPerson(input!);
 
-                if (GetPerson(input) == null)
+                if (GetPerson(input!) == null)
                 {
                     BadPrompt(input + " is not on the list");
                 }
