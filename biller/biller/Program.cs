@@ -784,7 +784,29 @@
     {
         public void Go()
         {
-            // CONTINUE
+            while (true)
+            {
+                ListItems();
+                Console.WriteLine("Which item would you like to access?");
+                string? input = GetString("Enter a 'tag' or 'cancel' to go back: ");
+
+                if (input == "cancel" || input == "")
+                {
+                    return;
+                }
+
+                Item item = GetItem(input!);
+
+                if (GetItem(input!) == null)
+                {
+                    BadPrompt(input + " is not on the list");
+                }
+                else
+                {
+                    Edit(item);
+                    break;
+                }
+            }
         }
     }
 
