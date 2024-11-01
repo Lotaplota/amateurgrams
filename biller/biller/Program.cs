@@ -340,15 +340,10 @@
         Console.WriteLine($"{person.Name} bought: ");
         for (int i = 0; i < links.Count; i++)
         {
-            // Indents the text if the user chooses by the specified amount
-            if (indentation > 0)
-            {
-                Console.Write(String.Concat(Enumerable.Repeat("    ", indentation)));
-            }
-
-            // Prints the item's name and how much said person contributes
+            // Prints the item's name and how much said person contributes indenting by the specified amount
             if (links[i].Contributor.Name == person.Name)
             {
+                Console.Write(String.Concat(Enumerable.Repeat("    ", indentation)));
                 Console.WriteLine($"{links[i].Item.Tag} for {ShareOf(links[i].Item)}");
             }
         }
@@ -542,11 +537,6 @@
         }
 
         Console.WriteLine();
-        // Not using this one for differentiation purposes
-        // foreach (Person person in people)
-        // {
-        //     // DisplayLinksFrom(person, 0);
-        // }
     }
 
     public interface IBranch
@@ -739,7 +729,23 @@
 
     static void Edit(Person person)
     {
-        // TODO
+        while (true)
+        {
+            string? input = GetString($"Rename {person.Name} or 'cancel' to go back: ");
+
+            if (input == "cancel" || input == "")
+            {
+                break;
+            }
+            else
+            {
+                Console.WriteLine($"\nYou changed {person.Name}'s name to {input}");
+                HoldForKey();
+
+                person.Name = input!;
+                break;
+            }
+        }
     }
 
     static void Edit(Item item)
