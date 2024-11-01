@@ -107,7 +107,6 @@
         // Links the person to all of the items in the list
         foreach (Item item in items)
         {
-            Console.WriteLine($"{newPerson.Name} now contributes to {item.Tag}");
             links.Add(new(newPerson, item));
         }
     }
@@ -198,7 +197,7 @@
         // If the person returned was null, warns the user that the person's name is not in the list and returns from the method
         if (removee == null)
         {
-            Console.WriteLine($"can't remove {name} because they're not on the list!");
+            BadPrompt($"can't remove {name} because they're not on the list!");
             return;
         }
         else
@@ -211,7 +210,6 @@
         {
             if (links[i].Contributor.Name == name)
             {
-                Console.WriteLine($"{links[i]} removed");
                 links.Remove(links[i]);
             }
         }
@@ -253,10 +251,9 @@
         
         // Prints, in one line, the name of each person on the list
         ListPeople();
-        Console.WriteLine("Now type in a list of people. People who match the names in the list will be removed. People that aren't on the list will be added\n" +
-        "Enter 'done' to go back");
-
-        string? input = Console.ReadLine();
+        Console.WriteLine("Now type in a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
+        
+        string? input = GetString("Enter the list of 'names' or 'done' to go back: ");
         string[] names = input!.Split();
 
         if (input == "done" || input == "")
@@ -270,12 +267,16 @@
             if (GetPerson(name) == null)
             {
                 AddPerson(name);
+                Console.WriteLine($"Added {name}");
             }
             else
             {
                 RemovePerson(name);
+                Console.WriteLine($"Removed {name}");
             }
         }
+
+        HoldForKey();
     }
 
     static void EditItemList()
@@ -351,6 +352,8 @@
 
     static void DisplaySummary()
     {
+        float finalValue = 0;
+        
         for (int i = 0; i < people.Count; i++)
         {
             // Initializing the person and their items
@@ -367,11 +370,19 @@
             // Sums the value of all items the current person contributes
             for (int j = 0; j < theirItems.Count; j++)
             {
-                owedValue += ShareOf(theirItems[j]);
+                float share = ShareOf(theirItems[j]);
+                finalValue += share;
+                owedValue += share;
             }
 
-            Console.WriteLine($"owing a total of {owedValue}\n");
+            Printy($"Owing a total of {owedValue}", ConsoleColor.White, ConsoleColor.Black);
+            Console.WriteLine("\n");
         }
+
+        // Prints the total price of the items
+        Printy("The final bill amounts to ", ConsoleColor.Black, ConsoleColor.Green);
+        Printy($"{finalValue}", ConsoleColor.Green, ConsoleColor.Black);
+        Console.WriteLine();
 
         HoldForKey();
     }
@@ -424,6 +435,20 @@
     {
         Console.Write(prompt);
         return Console.ReadLine();
+    }
+
+    static void Printy(string text, ConsoleColor b)
+    {
+        Console.BackgroundColor = b;
+        Console.Write(text);
+        Console.BackgroundColor = ConsoleColor.Black;
+    }
+
+    static void Printy(string text, ConsoleColor b, ConsoleColor f)
+    {
+        Console.BackgroundColor = b; Console.ForegroundColor = f;
+        Console.Write(text);
+        Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor= ConsoleColor.White;
     }
 
     static void UpdatePerson(string name)
@@ -628,7 +653,7 @@
             
             Console.Write("Edit the list of\n" +
             "1. People\n" +
-            "2. Items (TEST)\n" +
+            "2. Items\n" +
             "Type in one the options (name or number) or 'cancel' to go back: ");
 
             while (true)
@@ -674,7 +699,7 @@
 
                 Console.WriteLine($"What would you like to change?\n"
                 + "1. A person\n"
-                + "2. An item\n");
+                + "2. An item (NOT WORKING)\n");
 
                 input = GetString("Choose a 'number' or 'cancel' to go back: ");
 
@@ -706,7 +731,8 @@
             while (true)
             {
                 ListPeople();
-                string? input = GetString("Which person would you like to access? ");
+                Console.WriteLine("Which person would you like to access?");
+                string? input = GetString("Enter a 'name' or 'cancel' to go back: ");
 
                 if (input == "cancel" || input == "")
                 {
@@ -722,6 +748,7 @@
                 else
                 {
                     Edit(person);
+                    break;
                 }
             }
         }
@@ -757,7 +784,7 @@
     {
         public void Go()
         {
-            // TODO
+            // CONTINUE
         }
     }
 
