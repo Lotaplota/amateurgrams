@@ -23,13 +23,12 @@
             
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n"
-            + "1. Display the lists of people, items, or links (DONE)\n"
-            + "2. edit people or item list\n"
-            + "3. change data of a person or item (TEST)\n"
-            + "4. Print all info (DONE)\n"
-            + "exit. quits the application\n");
+            + "1. (DONE) Display the lists of people, items, or links\n"
+            + "2. (DONE) Edit people or item list\n"
+            + "3. (DONE) Change data of a person or item\n"
+            + "4. (DONE) Print all info\n");
 
-            input = GetString("Enter a 'number': ");
+            input = GetString("Enter a 'number' or 'exit' to quit the application: ");
 
             IBranch command = input switch
             {
@@ -699,7 +698,7 @@
 
                 Console.WriteLine($"What would you like to change?\n"
                 + "1. A person\n"
-                + "2. An item (NOT WORKING)\n");
+                + "2. An item\n");
 
                 input = GetString("Choose a 'number' or 'cancel' to go back: ");
 
@@ -777,7 +776,96 @@
 
     static void Edit(Item item)
     {
-        // TODO
+        while (true)
+        {
+            Console.WriteLine($"Current item: {item}\n"
+            + "What would you like to change about this item?\n"
+            + "1. Tag\n"
+            + "2. Price\n");
+            string? input = GetString("Enter a 'number' or 'cancel' to go back: ");
+
+            if (input == "cancel" || input == "")
+            {
+                return;
+            }
+
+            if (input == "1")
+            {
+                ChangeTag(item);
+                break;
+            }
+            else if (input == "2")
+            {
+                ChangePrice(item);
+                break;
+            }
+            else
+            {
+                BadPrompt("Invalid input");
+            }
+        }
+    }
+
+    static void ChangeTag(Item item)
+    {
+        while (true)
+        {
+            Clear();
+
+            Console.WriteLine($"Current tag: {item.Tag}\n");
+            string? input = GetString("Enter a new 'tag' or 'cancel' to go back: ");
+
+            if (input == "cancel" || input == "")
+            {
+                return;
+            }
+
+            if (input!.Split().Length > 1)
+            {
+                BadPrompt("New tag must be a single word");
+            }
+            else
+            {
+                Console.WriteLine($"Changed {item.Tag} to {input}");
+                item.Tag = input;
+
+                HoldForKey();
+                break;
+            }
+        }
+    }
+
+    static void ChangePrice(Item item)
+    {
+        Clear();
+
+        while (true)
+        {
+            Console.WriteLine($"Current price: {item.Price}\n");
+            string? input = GetString("Enter a new 'price' or 'cancel' to go back: ");
+
+            if (input == "cancel" || input == "")
+            {
+                return;
+            }
+
+            if (input!.Split().Length > 1)
+            {
+                BadPrompt("New price must not contain whitespaces");
+            }
+            else if (!float.TryParse(input, out float newPrice))
+            {
+                BadPrompt("New price must be numeric");
+            }
+            else
+            {
+                Console.WriteLine($"Changed {item.Price} to {newPrice}");
+                item.Price = newPrice;
+
+                HoldForKey();
+                break;
+            }
+        }
     }
 
     public class ChangeItemBranch : IBranch
@@ -851,6 +939,11 @@
         {
             Tag = tag;
             Price = price;
+        }
+
+        public override string ToString()
+        {
+            return $"{Tag} for {Price}";
         }
     }
 
