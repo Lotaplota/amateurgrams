@@ -1,5 +1,6 @@
 ﻿internal class Program
 {
+    // Lists to store the people, items, and links between those two
     static List<Person> people = [];
     static List<Link> links = [];
     static List<Item> items = [];
@@ -8,7 +9,6 @@
     {
         PopulatePeople();
         AddItems();
-        // PopulateItems()a;
         MainMenu();
     }
 
@@ -19,7 +19,7 @@
         
         while (input != "exit")
         {
-            Clear();
+            Console.Clear();
             
             // Prints the main menu, showing the user all of his options
             Console.WriteLine("MAIN MENU\n"
@@ -62,7 +62,7 @@
 
     static void PopulatePeople()
     {
-        Clear();
+        Console.Clear();
 
         string? input;
 
@@ -114,7 +114,7 @@
     // Can link the new item to everyone at once or just to the specified people
     static void AddItems()
     {
-        Clear();
+        Console.Clear();
 
         string? input;
 
@@ -246,7 +246,7 @@
     // If the entered person is not on the list, adds the person
     static void EditPersonList()
     {
-        Clear();
+        Console.Clear();
         
         // Prints, in one line, the name of each person on the list
         ListPeople();
@@ -296,7 +296,7 @@
             return;
         }
 
-        Clear();
+        Console.Clear();
 
         foreach (string tag in tags)
         {
@@ -511,7 +511,7 @@
 
     private static void ListPeople()
     {
-        Clear(); 
+        Console.Clear(); 
         
         Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
@@ -524,7 +524,7 @@
 
     static void ListItems()
     {
-        Clear();
+        Console.Clear();
         
         // Initializing variable to store the amount of letters in the biggest item name
         int maxLength = 0; 
@@ -549,7 +549,7 @@
     // Prints all of the links in the list
     static void ListLinks()
     {
-        Clear();
+        Console.Clear();
         
         foreach ( Person person in people)
         {
@@ -572,7 +572,7 @@
     {
         public void Go()
         {
-            Clear();
+            Console.Clear();
             
             while (true)
             {
@@ -626,7 +626,7 @@
         Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
 
-        Clear();
+        Console.Clear();
     }
 
     // Prints a warning, padding lines around it and changing the console's colors
@@ -648,7 +648,7 @@
     {
         public void Go()
         {
-            Clear();
+            Console.Clear();
             
             Console.Write("Edit the list of\n" +
             "1. People\n" +
@@ -694,7 +694,7 @@
 
             while (input != "cancel") // MAYBE changing this condition to check if the branch is null
             {
-                Clear();
+                Console.Clear();
 
                 Console.WriteLine($"What would you like to change?\n"
                 + "1. A person\n"
@@ -810,7 +810,7 @@
     {
         while (true)
         {
-            Clear();
+            Console.Clear();
 
             Console.WriteLine($"Current tag: {item.Tag}\n");
             string? input = GetString("Enter a new 'tag' or 'cancel' to go back: ");
@@ -837,7 +837,7 @@
 
     static void ChangePrice(Item item)
     {
-        Clear();
+        Console.Clear();
 
         while (true)
         {
@@ -902,7 +902,7 @@
     {
         public void Go()
         {
-            Clear();
+            Console.Clear();
             DisplaySummary();
         }
     }
