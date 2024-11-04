@@ -22,11 +22,11 @@
             Console.Clear();
             
             // Prints the main menu, showing the user all of his options
-            Console.WriteLine("MAIN MENU\n"
-            + "1. (DONE) Display the lists of people, items, or links\n"
-            + "2. (DONE) Edit people or item list\n"
-            + "3. (DONE) Change data of a person or item\n"
-            + "4. (DONE) Print all info\n");
+            Console.WriteLine("----MAIN MENU----\n"
+            + "1. Display the lists of people, items, or links\n"
+            + "2. Edit people or item list\n"
+            + "3. Change data of a person or item\n"
+            + "4. Print all info\n");
 
             input = GetString("Enter a 'number' or 'exit' to quit the application: ");
 
@@ -68,7 +68,7 @@
 
         while (true)
         {
-            input = GetString("enter each user's name: ");
+            input = GetString("Enter the 'name' of each person\n");
 
             if (input == null || input == "")
             {
@@ -125,9 +125,9 @@
             // float itemPrice = 0; inlining? DONKEY
 
             // Prompts for the new item name and price, then separates the input into an array
-            input = GetString("Enter the item's prices and contributors\n"
-                + "If you don't specify anyone, everyone will contribute\n"
-                + "Enter 'name price [person...]' or 'done' to continue\n");
+            Console.WriteLine("Enter the item's prices and contributors\n"
+                + "If you don't specify anyone, everyone will contribute\n");
+            input = GetString("Enter 'name price [person...]' or 'done' to continue\n");
             string[] words = input!.Split();
 
             // Returns if user chooses to
@@ -250,15 +250,17 @@
         
         // Prints, in one line, the name of each person on the list
         ListPeople();
-        Console.WriteLine("Now type in a list of people. People who match the names in the list will be removed. People that aren't on the list will be added");
-        
-        string? input = GetString("Enter the list of 'names' or 'done' to go back: ");
+
+        Console.WriteLine("Now type in a list of people\n People who match the names in the list will be removed\n People that aren't on the list will be added");
+        string? input = GetString("Enter the list of 'names' or 'done' to go back\n");
         string[] names = input!.Split();
 
         if (input == "done" || input == "")
         {
             return;
         }
+
+        Console.Clear();
 
         foreach (string name in names)
         {
@@ -365,7 +367,6 @@
             // Displaying all items associated with such person
             DisplayLinksFrom(currentPerson, 1);
 
-
             // Sums the value of all items the current person contributes
             for (int j = 0; j < theirItems.Count; j++)
             {
@@ -374,13 +375,15 @@
                 owedValue += share;
             }
 
+            finalValue = (float)Math.Round(finalValue, 2);
+            
             Printy($"Owing a total of {owedValue}", ConsoleColor.White, ConsoleColor.Black);
             Console.WriteLine("\n");
         }
 
         // Prints the total price of the items
         Printy("The final bill amounts to ", ConsoleColor.Black, ConsoleColor.Green);
-        Printy($"{finalValue}", ConsoleColor.Green, ConsoleColor.Black);
+        Printy($"{finalValue}\n", ConsoleColor.Green, ConsoleColor.Black);
         Console.WriteLine();
 
         HoldForKey();
@@ -432,15 +435,15 @@
 
     static string? GetString(string prompt)
     {
-        Console.Write(prompt);
+        Printy(prompt, ConsoleColor.DarkYellow);
         return Console.ReadLine();
     }
 
-    static void Printy(string text, ConsoleColor b)
+    static void Printy(string text, ConsoleColor f)
     {
-        Console.BackgroundColor = b;
+        Console.ForegroundColor = f;
         Console.Write(text);
-        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.White;
     }
 
     static void Printy(string text, ConsoleColor b, ConsoleColor f)
@@ -450,7 +453,7 @@
         Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor= ConsoleColor.White;
     }
 
-    static void UpdatePerson(string name)
+    static void UpdatePerson(string name) // TODO use this on the edit branch!
     {
         // Gets the person with that name and their items
         Person person = GetPerson(name);
@@ -558,6 +561,7 @@
                 if (link.Contributor.Name == person.Name)
                 Console.WriteLine(link);
             }
+            Console.WriteLine();
         }
 
         Console.WriteLine();
@@ -623,7 +627,7 @@
 
     private static void HoldForKey()
     {
-        Console.WriteLine("Press any key to continue...");
+        Console.Write("Press any key to continue... ");
         Console.ReadKey();
 
         Console.Clear();
@@ -650,14 +654,14 @@
         {
             Console.Clear();
             
-            Console.Write("Edit the list of\n" +
-            "1. People\n" +
-            "2. Items\n" +
-            "Type in one the options (name or number) or 'cancel' to go back: ");
 
             while (true)
             {
-                string? input = Console.ReadLine();
+                Console.WriteLine("Edit the list of\n" +
+                "1. People\n" +
+                "2. Items\n");
+
+                string? input = GetString("Type in a 'number' or 'cancel' to go back: ");
 
                 // Returns if user chooses to
                 if (input == "cancel" || input == "")
@@ -677,7 +681,7 @@
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input");
+                    BadPrompt("Invalid input");
                 }
             }
         }
@@ -712,6 +716,11 @@
 
                 if (nextBranch == null)
                 {
+                    if (input == "")
+                    {
+                        return;
+                    }
+                    
                     BadPrompt("Invalid input");
                 }
                 else
@@ -755,8 +764,15 @@
 
     static void Edit(Person person)
     {
+        // TODO copy the Edit(Item) structure
+    }
+
+    static void ChangeName(Person person)
+    {
         while (true)
         {
+            Console.Clear();
+
             string? input = GetString($"Rename {person.Name} or 'cancel' to go back: ");
 
             if (input == "cancel" || input == "")
@@ -778,10 +794,13 @@
     {
         while (true)
         {
-            Console.WriteLine($"Current item: {item}\n"
-            + "What would you like to change about this item?\n"
+            Console.Clear();
+
+            Console.WriteLine($"Current item: {item}\n\n"
+            + $"What would you like to change about this item?\n"
             + "1. Tag\n"
-            + "2. Price\n");
+            + "2. Price\n"
+            + "3. Contributors\n");
             string? input = GetString("Enter a 'number' or 'cancel' to go back: ");
 
             if (input == "cancel" || input == "")
@@ -797,6 +816,11 @@
             else if (input == "2")
             {
                 ChangePrice(item);
+                break;
+            }
+            else if (input == "3")
+            {
+                ChangeContributors(item);
                 break;
             }
             else
@@ -826,7 +850,7 @@
             }
             else
             {
-                Console.WriteLine($"Changed {item.Tag} to {input}");
+                Console.WriteLine($"\nYou changed {item.Tag} to {input}");
                 item.Tag = input;
 
                 HoldForKey();
@@ -868,6 +892,11 @@
         }
     }
 
+    static void ChangeContributors(Item item)
+    {
+        // TODO
+    }
+
     public class ChangeItemBranch : IBranch
     {
         public void Go()
@@ -875,6 +904,7 @@
             while (true)
             {
                 ListItems();
+
                 Console.WriteLine("Which item would you like to access?");
                 string? input = GetString("Enter a 'tag' or 'cancel' to go back: ");
 
