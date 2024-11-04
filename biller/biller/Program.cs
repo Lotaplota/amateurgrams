@@ -688,11 +688,9 @@
         public void Go()
         {
             // Initializing branch
-            IBranch? nextBranch;
+            IBranch? nextBranch = null;
 
-            string? input = "";
-
-            while (input != "cancel") // MAYBE changing this condition to check if the branch is null
+            while (nextBranch == null) // MAYBE changing this condition to check if the branch is null
             {
                 Clear();
 
@@ -700,13 +698,14 @@
                 + "1. A person\n"
                 + "2. An item\n");
 
-                input = GetString("Choose a 'number' or 'cancel' to go back: ");
+                string? input = GetString("Choose a 'number' or 'cancel' to go back: ");
 
                 nextBranch = input switch
                 {
                     "1" => new ChangePersonBranch(),
                     "2" => new ChangeItemBranch(),
                     "cancel" => new VoidBranch(),
+                    "" => new VoidBranch(),
                     _ => null
                 };
 
@@ -717,7 +716,6 @@
                 else
                 {
                     nextBranch.Go();
-                    break;
                 }
             }
         }
