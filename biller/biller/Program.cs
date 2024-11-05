@@ -181,7 +181,6 @@
                     {
                         Link newLink = new(receiver, newItem);
                         links.Add(newLink);
-                        Console.WriteLine($"Adding the link {newLink}");
                     }
                 }
             }
@@ -677,7 +676,7 @@
 
         Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("\n");
+        Console.WriteLine("");
 
         HoldForKey();
     }
@@ -869,14 +868,14 @@
         }
 
         Console.WriteLine("\nTyping in an item alternates their statuses on the contributor's list");
-
         string? input = GetString("Enter a 'list of items' or 'cancel' to go back\n");
-        string[] tags = input!.Split();
 
         if (input == "cancel" || input == "")
         {
             return;
         }
+
+        string[] tags = input!.Split();
 
         Console.Clear();
 
@@ -1007,7 +1006,54 @@
 
     static void ChangeContributors(Item item)
     {
-        // TODO copy the structure from ChangeContributions()
+        Console.Clear();
+
+        Console.WriteLine("People who are contributing to this item:");
+        foreach (Person person in people)
+        {
+            if (AreLinked(person, item))
+            {
+                Printy(person.Name + "\n", ConsoleColor.Blue);
+            }
+            else
+            {
+                Console.WriteLine(person.Name);
+            }
+        }
+
+        Console.WriteLine("\nTyping in a name alternates their contribution status");
+        string? input = GetString("Enter a 'list of names' or 'cancel' to go back\n");
+
+        if (input == "cancel" || input == "")
+        {
+            return;
+        }
+
+        string[] names = input!.Split();
+
+        Console.Clear();
+
+        foreach (string name in names)
+        {
+            Person currentPerson = GetPerson(name);
+
+            if (currentPerson == null)
+            {
+                Console.WriteLine($"{name} is not a valid item!");
+            }
+            else if (AreLinked(currentPerson, item))
+            {
+                Console.WriteLine($"{currentPerson.Name} stopped contributing to {item.Tag}");
+                RemoveLink(currentPerson, item);
+            }
+            else
+            {
+                Console.WriteLine($"{currentPerson} now contributes to {item.Tag}");
+                links.Add(new(currentPerson, item));
+            }
+        }
+
+        HoldForKey();
     }
 
     public class ChangeItemBranch : IBranch
