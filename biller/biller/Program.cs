@@ -242,12 +242,19 @@
 
     static void RemoveLink(Person person, Item item)
     {
-        foreach (Link link in links)
+        string name = person.Name;
+        string tag = item.Tag;
+
+        // Loops through the list in reverse order
+        for (int i = links.Count - 1; i >= 0; i--)
         {
-            if (link.Contributor.Name == person.Name && link.Item.Tag == item.Tag)
+            string contributor = links[i].Contributor.Name;
+            string linkedTag = links[i].Item.Tag;
+
+            // Removes the link that links the person to the item
+            if (contributor == name && linkedTag == tag)
             {
-                Console.WriteLine($"removing {link}"); // DEBUG PRINT
-                links.Remove(link);
+                links.Remove(links[i]);
             }
         }
     }
@@ -262,7 +269,9 @@
         // Prints, in one line, the name of each person on the list
         ListPeople();
 
-        Console.WriteLine("Now type in a list of people\n People who match the names in the list will be removed\n People that aren't on the list will be added");
+        Console.WriteLine("Now type in a list of people\n"
+        + "People who match the names in the list will be removed\n"
+        + "People that aren't on the list will be added");
         string? input = GetString("Enter the list of 'names' or 'done' to go back\n");
         string[] names = input!.Split();
 
@@ -363,6 +372,8 @@
 
     static void DisplaySummary()
     {
+        Console.Clear();
+        
         float finalValue = 0;
         
         for (int i = 0; i < people.Count; i++)
@@ -393,8 +404,8 @@
 
         // Prints the total price of the items
         Printy("The final bill amounts to ", ConsoleColor.Black, ConsoleColor.Green);
-        Printy($"{finalValue}\n", ConsoleColor.Green, ConsoleColor.Black);
-        Console.WriteLine();
+        Printy($"{finalValue}", ConsoleColor.Green, ConsoleColor.Black);
+        Console.WriteLine("");
 
         HoldForKey();
     }
@@ -650,7 +661,7 @@
 
     private static void HoldForKey()
     {
-        Console.Write("Press any key to continue... ");
+        Console.Write("\nPress any key to continue... ");
         Console.ReadKey();
 
         Console.Clear();
@@ -867,6 +878,8 @@
             return;
         }
 
+        Console.Clear();
+
         foreach (string tag in tags)
         {
             Item currentItem = GetItem(tag);
@@ -877,8 +890,8 @@
             }
             else if (AreLinked(person, currentItem))
             {
-                RemoveLink(person, currentItem); // TODO this part is bugging out
                 Console.WriteLine($"{person.Name} stopped contributing to {currentItem.Tag}");
+                RemoveLink(person, currentItem);
             }
             else
             {
@@ -994,7 +1007,7 @@
 
     static void ChangeContributors(Item item)
     {
-        // TODO
+        // TODO copy the structure from ChangeContributions()
     }
 
     public class ChangeItemBranch : IBranch
@@ -1032,7 +1045,6 @@
     {
         public void Go()
         {
-            Console.Clear();
             DisplaySummary();
         }
     }
@@ -1062,7 +1074,7 @@
 
     public class Item
     {
-        public string? Tag {get; set;}
+        public string Tag {get; set;}
         public float Price {get; set;}
 
         public Item(string tag, float price)
