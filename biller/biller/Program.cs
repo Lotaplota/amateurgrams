@@ -235,8 +235,19 @@
         {
             if (links[i].Item.Tag == tag)
             {
-                Console.WriteLine($"{links[i]} removed");
                 links.Remove(links[i]);
+            }
+        }
+    }
+
+    static void RemoveLink(Person person, Item item)
+    {
+        foreach (Link link in links)
+        {
+            if (link.Contributor.Name == person.Name && link.Item.Tag == item.Tag)
+            {
+                Console.WriteLine($"removing {link}"); // DEBUG PRINT
+                links.Remove(link);
             }
         }
     }
@@ -285,10 +296,9 @@
         // Prints, in one line, the name of each person on the list
         ListItems();
         Console.WriteLine("If you want to remove any items, type in their tags.\n" +
-        "If you want to add more items, type 'add'\n" +
-        "Enter 'done' to go back");
+        "If you want to add more items, type 'add'\n");
 
-        string? input = Console.ReadLine();
+        string? input = GetString("Enter an option or 'done' to go back\n");
         string[] tags = input!.Split();
 
         // Allows the user to add more items to the list
@@ -433,6 +443,19 @@
         return null!;
     }
 
+    static bool AreLinked(Person person, Item item)
+    {
+        foreach(Link link in links)
+        {
+            if (link.Contributor.Name == person.Name && link.Item.Tag == item.Tag)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static string? GetString(string prompt)
     {
         Printy(prompt, ConsoleColor.DarkYellow);
@@ -519,7 +542,7 @@
         Console.WriteLine("People:");
         for (int i = 0; i < people.Count; i++)
         {
-            Console.WriteLine($"{i + 1}. {people[i].Name}");
+            Console.WriteLine($"{people[i].Name}");
         }
 
         Console.WriteLine();
@@ -762,7 +785,36 @@
 
     static void Edit(Person person)
     {
-        // TODO copy the Edit(Item) structure
+        while (true)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current person: {person}\n\n"
+            + $"What would you like to change about this person?\n"
+            + "1. Name\n"
+            + "2. Contributions\n");
+            string? input = GetString("Enter a 'number' or 'cancel' to go back: ");
+
+            if (input == "cancel" || input == "")
+            {
+                return;
+            }
+
+            if (input == "1")
+            {
+                ChangeName(person);
+                break;
+            }
+            else if (input == "2")
+            {
+                ChangeContributions(person);
+                break;
+            }
+            else
+            {
+                BadPrompt("Invalid input");
+            }
+        }
     }
 
     static void ChangeName(Person person)
@@ -786,6 +838,56 @@
                 break;
             }
         }
+    }
+
+    static void ChangeContributions(Person person)
+    {
+        Console.Clear();
+
+        Console.WriteLine("Items which this person contributes:");
+        foreach (Item item in items)
+        {
+            if (AreLinked(person, item))
+            {
+                Printy(item.Tag! + "\n", ConsoleColor.Blue);
+            }
+            else
+            {
+                Console.WriteLine(item.Tag);
+            }
+        }
+
+        Console.WriteLine("\nTyping in an item alternates their statuses on the contributor's list");
+
+        string? input = GetString("Enter a 'list of items' or 'cancel' to go back\n");
+        string[] tags = input!.Split();
+
+        if (input == "cancel" || input == "")
+        {
+            return;
+        }
+
+        foreach (string tag in tags)
+        {
+            Item currentItem = GetItem(tag);
+
+            if (currentItem == null)
+            {
+                Console.WriteLine($"{tag} is not a valid item!");
+            }
+            else if (AreLinked(person, currentItem))
+            {
+                RemoveLink(person, currentItem); // TODO this part is bugging out
+                Console.WriteLine($"{person.Name} stopped contributing to {currentItem.Tag}");
+            }
+            else
+            {
+                Console.WriteLine($"{person} now contributes to {currentItem.Tag}");
+                links.Add(new(person, currentItem));
+            }
+        }
+
+        HoldForKey();
     }
 
     static void Edit(Item item)
