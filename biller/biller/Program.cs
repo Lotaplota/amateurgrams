@@ -401,8 +401,8 @@
         }
 
         // Prints the total price of the items
-        Printy("The final bill amounts to ", ConsoleColor.Black, ConsoleColor.Green);
-        Printy($"{finalValue}", ConsoleColor.Green, ConsoleColor.Black);
+        Printy("The final bill amounts to ", f : ConsoleColor.Green);
+        Printy($"{finalValue}", ConsoleColor.Black, ConsoleColor.Green);
         Console.WriteLine("");
 
         HoldForKey();
@@ -471,20 +471,6 @@
         return Console.ReadLine();
     }
 
-    static void Printy(string text, ConsoleColor f)
-    {
-        Console.ForegroundColor = f;
-        Console.Write(text);
-        Console.ForegroundColor = ConsoleColor.White;
-    }
-
-    static void Printy(string text, ConsoleColor b, ConsoleColor f)
-    {
-        Console.BackgroundColor = b; Console.ForegroundColor = f;
-        Console.Write(text);
-        Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor= ConsoleColor.White;
-    }
-
     static void Printy(string text, ConsoleColor? f = null, ConsoleColor? b = null)
     {
         if (f.HasValue)
@@ -501,65 +487,6 @@
 
         Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.White;
-    }
-
-    static void UpdatePerson(string name) // TODO use this on the edit branch!
-    {
-        // Gets the person with that name and their items
-        Person person = GetPerson(name);
-        List<Item> theirItems = GetItemsFrom(person);
-
-        // Prints the items the person currently contributes to <-- WHOA LOOK AT THIS
-        Console.WriteLine("This person currently contributes to: "); // °o°
-        
-        if (theirItems.Count == 0)
-        {
-            Console.WriteLine("Nothing! Such a loser...");
-        }
-        foreach (Item item in theirItems)
-        {
-            Console.WriteLine($"{item.Tag}");
-        }
-
-        string? input = GetString("Type in the [item...] you want to add/remove, or 'cancel' to go back: ");
-        string[] words = input!.Split();
-
-        if (input == "cancel" || input == "")
-        {
-            return;
-        }
-
-        foreach (string word in words)
-        {
-            // Initializes the item to be removed
-            Item currentItem = GetItem(word);
-
-            if (currentItem == null)
-            {
-                Console.WriteLine($"{word} is not a valid item");
-            }
-
-            else
-            {
-                // Loops through the link list
-                for (int i = links.Count - 1; i >= 0; i--)
-                {
-                    // Removes the link that links the person to the item
-                    if (links[i].Item.Tag == word && links[i].Contributor.Name == person.Name) // MAYBE will bug out
-                    {
-                        Console.WriteLine($"Removed {links[i].Item.Tag} from {person.Name}");
-                        links.Remove(links[i]);
-                    }
-                }
-            }
-        }
-
-        HoldForKey();
-    }
-
-    static void UpdateItem()
-    {
-        // TODO
     }
 
     private static void ListPeople()
@@ -581,7 +508,9 @@
         int maxLength = 0; 
 
         Console.WriteLine("Items:");
-        foreach (var item in items)
+
+        // Checks the item list to find the maximum lenght of characters in an item tag
+        foreach (Item item in items)
         {
             if (item.Tag!.Length > maxLength)
             {
@@ -589,7 +518,7 @@
             }
         }
 
-        foreach (var item in items)
+        foreach (Item item in items)
         {
             Console.WriteLine($"{item.Tag!.PadRight(maxLength + 4)}{item.Price}");
         }
@@ -836,6 +765,7 @@
         }
     }
 
+    // Changes the name of a person
     static void ChangeName(Person person)
     {
         while (true)
@@ -850,6 +780,8 @@
             }
             else
             {
+                Console.Clear();
+
                 Console.WriteLine($"\nYou changed {person.Name}'s name to {input}");
                 HoldForKey();
 
@@ -859,6 +791,7 @@
         }
     }
 
+    // Changes which items some person contributes to
     static void ChangeContributions(Person person)
     {
         Console.Clear();
@@ -951,6 +884,7 @@
         }
     }
 
+    // Changes an item tag
     static void ChangeTag(Item item)
     {
         while (true)
@@ -965,13 +899,15 @@
                 return;
             }
 
+            Console.Clear();
+
             if (input!.Split().Length > 1)
             {
                 BadPrompt("New tag must be a single word");
             }
             else
             {
-                Console.WriteLine($"\nYou changed {item.Tag} to {input}");
+                Console.WriteLine($"You changed {item.Tag} to {input}");
                 item.Tag = input;
 
                 HoldForKey();
@@ -993,6 +929,8 @@
             {
                 return;
             }
+
+            Console.Clear();
 
             if (input!.Split().Length > 1)
             {
@@ -1073,7 +1011,7 @@
             {
                 ListItems();
 
-                Console.WriteLine("Which item would you like to access?");
+                Console.WriteLine("\nWhich item would you like to access?");
                 string? input = GetString("Enter a 'tag' or 'cancel' to go back: ");
 
                 if (input == "cancel" || input == "")
