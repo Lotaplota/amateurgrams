@@ -303,12 +303,17 @@
     {
         // Prints, in one line, the name of each person on the list
         ListItems();
-        Console.WriteLine("If you want to remove any items, type in their tags.\n"
+
+        Console.WriteLine("\nIf you want to remove any items, type in their tags.\n"
         + "You can 'add' more items");
 
-        string? input = GetString("Enter an 'option' or 'done' to go back\n");
+        string? input = GetString("Enter an 'option' or 'cancel' to go back\n");
 
         // Allows the user to add more items to the list
+        if (input == "cancel" || input == "")
+        {
+            return;
+        }
         if (input == "add")
         {
             AddItems();
@@ -708,7 +713,8 @@
             while (true)
             {
                 ListPeople();
-                Console.WriteLine("Which person would you like to access?");
+
+                Console.WriteLine("\nWhich person would you like to access?");
                 string? input = GetString("Enter a 'name' or 'cancel' to go back: ");
 
                 if (input == "cancel" || input == "")
@@ -942,7 +948,7 @@
             }
             else
             {
-                Console.WriteLine($"Changed {item.Price} to {newPrice}");
+                Console.WriteLine($"Changed {item.Tag}'s price from {item.Price} to {newPrice}");
                 item.Price = newPrice;
 
                 HoldForKey();
@@ -986,7 +992,7 @@
 
             if (currentPerson == null)
             {
-                Console.WriteLine($"{name} is not a valid item!");
+                Console.WriteLine($"{name} is not a valid person!");
             }
             else if (AreLinked(currentPerson, item))
             {
