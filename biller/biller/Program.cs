@@ -122,19 +122,19 @@
         {
             ListItems();
             Item newItem;
-            // float itemPrice = 0; inlining? DONKEY
 
             // Prompts for the new item name and price, then separates the input into an array
-            Console.WriteLine("Enter the item's prices and contributors\n"
+            Console.WriteLine("\nEnter the item's prices and contributors\n"
                 + "If you don't specify anyone, everyone will contribute\n");
-            input = GetString("Enter 'name price [person...]' or 'done' to continue\n");
-            string[] words = input!.Split();
+            input = GetString("Enter 'tag price [name...]' or 'done' to continue\n");
 
             // Returns if user chooses to
             if (input == "done" || input == "")
             {
                 return;
             }
+
+            string[] words = input!.Split();
 
             // Checking if the number of arguments is bigger than 2
             if (words.Length < 2)
@@ -268,7 +268,7 @@
         // Prints, in one line, the name of each person on the list
         ListPeople();
 
-        Console.WriteLine("Now type in a list of people\n"
+        Console.WriteLine("\nNow type in a list of people\n"
         + "People who match the names in the list will be removed\n"
         + "People that aren't on the list will be added");
         string? input = GetString("Enter the list of 'names' or 'done' to go back\n");
@@ -303,11 +303,10 @@
     {
         // Prints, in one line, the name of each person on the list
         ListItems();
-        Console.WriteLine("If you want to remove any items, type in their tags.\n" +
-        "If you want to add more items, type 'add'\n");
+        Console.WriteLine("If you want to remove any items, type in their tags.\n"
+        + "You can 'add' more items");
 
-        string? input = GetString("Enter an option or 'done' to go back\n");
-        string[] tags = input!.Split();
+        string? input = GetString("Enter an 'option' or 'done' to go back\n");
 
         // Allows the user to add more items to the list
         if (input == "add")
@@ -315,6 +314,8 @@
             AddItems();
             return;
         }
+
+        string[] tags = input!.Split();
 
         Console.Clear();
 
@@ -330,8 +331,6 @@
                 Console.WriteLine($"Removed {tag}");
                 RemoveItem(tag);
             }
-
-            Console.WriteLine();
         }
 
         HoldForKey();
@@ -486,6 +485,24 @@
         Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor= ConsoleColor.White;
     }
 
+    static void Printy(string text, ConsoleColor? f = null, ConsoleColor? b = null)
+    {
+        if (f.HasValue)
+        {
+            Console.ForegroundColor = f.Value;
+        }
+        
+        if (b.HasValue)
+        {
+            Console.BackgroundColor = b.Value;
+        }
+
+        Console.Write(text);
+
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.White;
+    }
+
     static void UpdatePerson(string name) // TODO use this on the edit branch!
     {
         // Gets the person with that name and their items
@@ -554,8 +571,6 @@
         {
             Console.WriteLine($"{people[i].Name}");
         }
-
-        Console.WriteLine();
     }
 
     static void ListItems()
@@ -578,8 +593,6 @@
         {
             Console.WriteLine($"{item.Tag!.PadRight(maxLength + 4)}{item.Price}");
         }
-
-        Console.WriteLine();
     }
 
     // Prints all of the links in the list
@@ -596,8 +609,6 @@
             }
             Console.WriteLine();
         }
-
-        Console.WriteLine();
     }
 
     public interface IBranch
@@ -613,31 +624,30 @@
             
             while (true)
             {
-                Console.Write("Display the list of\n" +
+                Console.WriteLine("Display the list of\n" +
                 "1. People\n" +
                 "2. Items\n" +
-                "3. Links\n" +
-                "Type in one of the (number) options or 'cancel' to go back: ");
+                "3. Links\n");
 
-                string? input = Console.ReadLine();
+                string? input = GetString("Type in one of the (number) options or 'cancel' to go back: ");
 
                 // Returns if user chooses to
-                if (input == "cancel" || input == "")
+                if (input == "cancel")
                 {
                     return;
                 }
                 // Executes the specified command
-                else if (input == "1" || input!.ToLower() == "people")
+                else if (input == "1")
                 {
                     ListPeople();
                     break;
                 }
-                else if (input == "2" || input.ToLower() == "items")
+                else if (input == "2")
                 {
                     ListItems();
                     break;
                 }
-                else if (input == "3" || input.ToLower() == "links")
+                else if (input == "3")
                 {
                     ListLinks();
                     break;
@@ -660,7 +670,7 @@
 
     private static void HoldForKey()
     {
-        Console.Write("\nPress any key to continue... ");
+        Printy("\nPress any key to continue... ", ConsoleColor.DarkYellow);
         Console.ReadKey();
 
         Console.Clear();
@@ -686,13 +696,12 @@
         public void Go()
         {
             Console.Clear();
-            
 
             while (true)
             {
-                Console.WriteLine("Edit the list of\n" +
-                "1. People\n" +
-                "2. Items\n");
+                Console.WriteLine("Edit the list of\n"
+                + "1. People\n"
+                + "2. Items\n");
 
                 string? input = GetString("Type in a 'number' or 'cancel' to go back: ");
 
