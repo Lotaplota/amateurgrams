@@ -30,18 +30,20 @@
 
             input = GetString("Enter a 'number' or 'exit' to quit the application: ");
 
-            IBranch command = input switch
+            // Branches the program into different paths the user can take
+            // All of these branches have the IBranch interfaces
+            IBranch branch = input switch
             {
                 "1" => new ListBranch(),
                 "2" => new EditListBranch(),
                 "3" => new ChangeBranch(),
                 "4" => new InfoBranch(),
-                // New commands go here
+                // New branches go here
                 _ => new VoidBranch()
             };
 
-            // if the input is not valid, creates a void branch to repeat the loop    
-            if (command.GetType() == typeof(VoidBranch))
+            // Checks if the input is not on the list 
+            if (branch.GetType() == typeof(VoidBranch))
             {
                 if (input == "exit")
                 {
@@ -55,11 +57,12 @@
             // Enters the chosen branch
             else
             {
-                command.Go();
+                branch.Go();
             }
         }
     }
 
+    // Populates the list of people on the start of the program according to the user's input
     static void PopulatePeople()
     {
         Console.Clear();
@@ -80,13 +83,15 @@
             }
         }
 
-        string[] words = input!.Split();
-        foreach (string word in words)
+        // Splits the input into an array of names to be added to the people list
+        string[] names = input!.Split();
+        foreach (string name in names)
         {
-            people.Add(new Person(word));
+            people.Add(new Person(name));
         }
     }
 
+    // Adds a new named person to the list of people
     static void AddPerson(string name)
     {
         Person newPerson = new(name);
@@ -103,7 +108,7 @@
             return;
         }
         
-        // Links the person to all of the items in the list
+        // Links the new person to all of the items in the list
         foreach (Item item in items)
         {
             links.Add(new(newPerson, item));
@@ -111,7 +116,7 @@
     }
 
     // Prompts the user to add items to the list, asking for a tag and a price
-    // Can link the new item to everyone at once or just to the specified people
+    // Can link at just specified people if asked to, but defaults to linking the new item to everyone
     static void AddItems()
     {
         Console.Clear();
@@ -121,6 +126,7 @@
         while (true)
         {
             ListItems();
+
             Item newItem;
 
             // Prompts for the new item name and price, then separates the input into an array
@@ -150,7 +156,7 @@
                 continue;
             }
             
-            // Initializing item with it's name and price then adding it to the list
+            // Initializing item with its name and price then adding it to the list
             newItem = new(words[0], itemPrice);
             items.Add(newItem);
 
@@ -169,7 +175,6 @@
                 // Creates links between the item and each person in the command-line arguments, if the person exists
                 for (int i = 2; i < words.Length; i++)
                 {
-                    // Initializing person to receive the item
                     Person receiver = GetPerson(words[i]);
 
                     // Adding link between person and item to the list if the person exists
@@ -187,6 +192,7 @@
         }
     }
 
+    // Removes a named person from the list of people as well as all of the links that are connected to them
     static void RemovePerson(string name)
     {
         // Retrieves the person to be removed if name matches
@@ -213,6 +219,7 @@
         }
     }
 
+    // Removes a named item from the list of items as well as all of the links that are connected to it
     static void RemoveItem(string tag)
     {
         // Retrieves the item to be removed if name matches
@@ -239,6 +246,7 @@
         }
     }
 
+    // Removes a link from the list of links but only if the person and item are linked
     static void RemoveLink(Person person, Item item)
     {
         string name = person.Name;
@@ -250,7 +258,7 @@
             string contributor = links[i].Contributor.Name;
             string linkedTag = links[i].Item.Tag;
 
-            // Removes the link that links the person to the item
+            // Removes the link
             if (contributor == name && linkedTag == tag)
             {
                 links.Remove(links[i]);
@@ -258,20 +266,22 @@
         }
     }
 
-    // Edits the list of people by comparing the names to user input
+    // Edits the list of people by comparing names to user input
     // If the entered person is already on the list, removes the person
     // If the entered person is not on the list, adds the person
     static void EditPersonList()
     {
         Console.Clear();
-        
-        // Prints, in one line, the name of each person on the list
+
         ListPeople();
 
+        // Prompts the user to enter a list of names
         Console.WriteLine("\nNow type in a list of people\n"
         + "People who match the names in the list will be removed\n"
         + "People that aren't on the list will be added");
         string? input = GetString("Enter the list of 'names' or 'done' to go back\n");
+
+        // Splits the input into an array of names to be analysed
         string[] names = input!.Split();
 
         if (input == "done" || input == "")
@@ -281,9 +291,9 @@
 
         Console.Clear();
 
+        // Removes person if name is already on the list, adds if not on the list
         foreach (string name in names)
         {
-            // Removes person if name is already on the list, adds if not on the list
             if (GetPerson(name) == null)
             {
                 AddPerson(name);
@@ -299,21 +309,23 @@
         HoldForKey();
     }
 
+    // Edits the list of items by comparing tags to user input
+    // If the entered item is already on the list, removes it
+    // If the entered item is not on the list, adds it
     static void EditItemList()
     {
-        // Prints, in one line, the name of each person on the list
         ListItems();
 
         Console.WriteLine("\nIf you want to remove any items, type in their tags.\n"
         + "You can 'add' more items");
-
         string? input = GetString("Enter an 'option' or 'cancel' to go back\n");
 
-        // Allows the user to add more items to the list
         if (input == "cancel" || input == "")
         {
             return;
         }
+
+        // Allows the user to add more items to the list
         if (input == "add")
         {
             AddItems();
@@ -324,9 +336,9 @@
 
         Console.Clear();
 
+        // Loops through the item list, removing the item if it exists
         foreach (string tag in tags)
         {
-            // Removes item if if exists
             if (GetItem(tag) == null)
             {
                 Console.WriteLine($"Couldn't remove {tag} because it doesn't exist");
@@ -341,24 +353,24 @@
         HoldForKey();
     }
 
-    // Calculates the values for a given item taking into account how many candidates are contributing
+    // Calculates the price of a share of an item taking into account how many candidates are linked to it
     static float ShareOf(Item item)
     {
-        int buyers = 0;
+        int contributors = 0;
 
-        for (int i = 0; i < links.Count; i++)
+        foreach (Link link in links)
         {
-            if (links[i].Item.Tag == item.Tag)
+            if (link.Item.Tag == item.Tag)
             {
-                buyers++;
+                contributors++;
             }
         }
 
         // Returns the calculated value with two decimal places, rounded up
-        return (float)Math.Round(item.Price / buyers, 2, MidpointRounding.ToPositiveInfinity);
+        return (float)Math.Round(item.Price / contributors, 2, MidpointRounding.ToPositiveInfinity);
     }
 
-    // Displays the links that contain the specified person
+    // Prints the links that contain the specified person, indenting it if needed
     static void DisplayLinksFrom(Person person, int indentation)
     {
         Console.WriteLine($"{person.Name} bought: ");
@@ -373,6 +385,7 @@
         }
     }
 
+    // CONTINUE
     static void DisplaySummary()
     {
         Console.Clear();
